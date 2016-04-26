@@ -31,5 +31,12 @@ namespace DormitoryProject
             LF.resetFields();
             LF.Show();
         }
+
+        private void btnUsers_Click(object sender, EventArgs e)
+        {
+            UserForm uf = new UserForm(URP);
+            uf.Show();
+            //this.Hide(); оформляем форму для инфі о юзерах 
+        }
     }
 }

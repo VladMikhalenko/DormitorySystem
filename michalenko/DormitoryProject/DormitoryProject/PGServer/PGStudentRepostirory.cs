@@ -29,6 +29,7 @@ namespace DormitoryProject.PGServer
                 cmd.Parameters.AddWithValue("@number", number);
                 using (NpgsqlDataReader reader = cmd.ExecuteReader())
                 {
+                    reader.Read();
                     return fromReaderToStudent(reader);               
                 }
                
@@ -40,26 +41,22 @@ namespace DormitoryProject.PGServer
             var stud = new StudentDAL() ;
             if(reader.HasRows)
             {
-                while(reader.Read())
+                stud = new StudentDAL
                 {
-                    stud = new StudentDAL
-                    {
-                        uLastName = Convert.ToString(reader["u_last_name"]),
-                        uName = Convert.ToString(reader["u_name"]),
-                        sKurs = Convert.ToInt32(reader["kurs"]),
-                        sFacult = Convert.ToString(reader["facult"]),
-                        sSpec = Convert.ToString(reader["spec"]),
-                        sGroup = Convert.ToInt32(reader["s_group"]),
-                        uNumber = Convert.ToString(reader["u_number"]),
-                        uSerial = Convert.ToString(reader["u_serial"]),
-                        room=Convert.ToInt32(reader["room_num"])
-                    };
-                    if (reader["u_patr"] != DBNull.Value)
-                    {
-                        stud.uPatr = Convert.ToString(reader["u_patr"]);
-                    }
+                    uLastName = Convert.ToString(reader["u_last_name"]),
+                    uName = Convert.ToString(reader["u_name"]),
+                    sKurs = Convert.ToInt32(reader["kurs"]),
+                    sFacult = Convert.ToString(reader["facult"]),
+                    sSpec = Convert.ToString(reader["spec"]),
+                    sGroup = Convert.ToInt32(reader["s_group"]),
+                    uNumber = Convert.ToString(reader["u_number"]),
+                    uSerial = Convert.ToString(reader["u_serial"]),
+                    room=Convert.ToInt32(reader["room_num"])
+                };
+                if (reader["u_patr"] != DBNull.Value)
+                {
+                    stud.uPatr = Convert.ToString(reader["u_patr"]);
                 }
-                
             }
             
             return stud;
@@ -67,7 +64,7 @@ namespace DormitoryProject.PGServer
 
         public bool removeBySerial(string seria,string number)
         {
-            string delQuery = "DELETE FROM stud_view WHERE u_serial=@u_serial AND u_number=@u_number";
+            string delQuery = "SELECT remove_stud(@u_serial,@u_number)";
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
@@ -91,7 +88,7 @@ namespace DormitoryProject.PGServer
         public bool addUser(Object person)
         {
             StudentDAL student = (person as StudentDAL);
-            string addQuery = "SELECT settle('С',@serial,@number,@last_name,@name,@patr,@kurs,@facult,@spec,@group,@room)";
+            string addQuery = "SELECT settling('С',@last_name,@name,@patr,@kurs,@facult,@spec,@group,@serial,@number,@room)";
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
@@ -200,14 +197,14 @@ namespace DormitoryProject.PGServer
 
             bool hasPrev = false;
             #region LastName
-            if(student.uLastName!=string.Empty)
+            if(!string.IsNullOrWhiteSpace(student.uLastName))
             {
                 getQuery += " u_last_name='" + student.uLastName.ToString() + "' ";
                 hasPrev = true;
             }
             #endregion
             #region Name
-            if(student.uName!=string.Empty)
+            if(!string.IsNullOrWhiteSpace(student.uName))
             {
                 if(hasPrev)
                 {
@@ -222,7 +219,7 @@ namespace DormitoryProject.PGServer
             }
             #endregion
             #region Patr
-            if(student.uPatr!=string.Empty)
+            if(!string.IsNullOrWhiteSpace(student.uPatr))
             {
                 if (hasPrev)
                 {
@@ -237,7 +234,7 @@ namespace DormitoryProject.PGServer
             }
             #endregion
             #region Faculty
-            if(student.sFacult!=string.Empty)
+            if(!string.IsNullOrWhiteSpace(student.sFacult))
             {
                 if (hasPrev)
                 {
@@ -267,7 +264,7 @@ namespace DormitoryProject.PGServer
             }
             #endregion
             #region Speciality
-            if (student.sSpec!=string.Empty)
+            if (!string.IsNullOrWhiteSpace(student.sSpec))
             {
                 if (hasPrev)
                 {
@@ -292,6 +289,36 @@ namespace DormitoryProject.PGServer
                 else
                 {
                     getQuery += " s_group='" + student.sGroup + "' ";
+                }
+                hasPrev = true;
+            }
+            #endregion
+            #region Serial
+            if (!string.IsNullOrWhiteSpace(student.uSerial))
+            {
+                if (hasPrev)
+                {
+                    getQuery += " AND ";
+                    getQuery += " u_serial='" + student.uSerial+ "' ";
+                }
+                else
+                {
+                    getQuery += " u_serial='" + student.uSerial+ "' ";
+                }
+                hasPrev = true;
+            }
+            #endregion
+            #region Number
+            if (!string.IsNullOrWhiteSpace(student.uNumber ))
+            {
+                if (hasPrev)
+                {
+                    getQuery += " AND ";
+                    getQuery += " u_number='" + student.uNumber + "' ";
+                }
+                else
+                {
+                    getQuery += " u_number='" + student.uNumber + "' ";
                 }
                 hasPrev = true;
             }
@@ -326,7 +353,7 @@ namespace DormitoryProject.PGServer
             }
             return list.AsEnumerable();
         }
-
+        
         public bool checkUser(string userType, string serial, string number, string password)
         {
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
@@ -356,5 +383,27 @@ namespace DormitoryProject.PGServer
         public void Dispose()
         { }
 
+        public bool resettleStudent(string serial, string number, int room)
+        {
+            string query = "SELECT resettle(@serial,@number,@room)";
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                NpgsqlCommand cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@serial", serial);
+                cmd.Parameters.AddWithValue("@number", number);
+                cmd.Parameters.AddWithValue("@room", room);
+                bool success = true;
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Ошибка переселения! Текст ошибки:" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                return success;
+            }
+        }
     }
 }

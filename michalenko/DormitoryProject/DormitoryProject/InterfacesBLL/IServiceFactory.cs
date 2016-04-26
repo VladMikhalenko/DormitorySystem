@@ -8,7 +8,8 @@ namespace DormitoryProject.InterfacesBLL
 {
     public interface IServiceFactory
     {
-        IStudentService getStudentService();
+        IUserService getStudentService();
+        IUserService getWorkerService();
         IRoomService getRoomService();
 
     }

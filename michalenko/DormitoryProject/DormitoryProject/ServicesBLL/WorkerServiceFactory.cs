@@ -1,19 +1,19 @@
-﻿using System;
+﻿using DormitoryProject.Interfaces;
+using DormitoryProject.InterfacesBLL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DormitoryProject.InterfacesBLL;
-using DormitoryProject.Interfaces;
-using DormitoryProject.ServicesBLL;
-namespace DormitoryProject
+
+namespace DormitoryProject.ServicesBLL
 {
-    class StudentServiceFactory : IServiceFactory
+    public class WorkerServiceFactory:IServiceFactory
     {
         private readonly IRepositoryFactory repositoryFactory;
-        public StudentServiceFactory(IRepositoryFactory repositoryFactory)
+        public WorkerServiceFactory(IRepositoryFactory repositoryFactory)
         {
-            if(repositoryFactory==null)
+            if (repositoryFactory == null)
             {
                 throw new ArgumentNullException("repositoryFactory");
             }
@@ -26,12 +26,12 @@ namespace DormitoryProject
 
         public IUserService getStudentService()
         {
-            return new StudentService(repositoryFactory);
+            throw new NotImplementedException();
         }
 
         public IUserService getWorkerService()
         {
-            throw new NotImplementedException();
+            return new WorkerService(repositoryFactory);
         }
     }
 }

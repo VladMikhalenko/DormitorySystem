@@ -13,7 +13,7 @@ namespace DormitoryProject.Interfaces
         bool addUser(Object person);
         bool updateInfo(Object person);
         bool checkUser(string userType, string serial, string number, string password);
-        
+        bool resettleStudent(string serial, string number, int room);
         IEnumerable<Object> getAll();
         IEnumerable<Object> searchBy(Object person);
     }

@@ -17,7 +17,7 @@ namespace DormitoryProject.Presenters
         private string con=string.Empty;
         private LoginForm form;
         private readonly IServiceFactory serviceFactory;
-        private readonly IStudentService service;
+        private readonly IUserService service;
 
         private string login;
         private string password;
@@ -63,7 +63,7 @@ namespace DormitoryProject.Presenters
             number = login.Substring(3, login.Length-3);
 
             bool res;
-            res = service.checkPassword(userType, serial, number, password);
+            res = service.Authentication(userType, serial, number, password);
                 
             if(res)
             {

@@ -59,7 +59,8 @@
     <Compile Include="DomainObjects\PersonBLL.cs" />
     <Compile Include="DomainObjects\RoomBLL.cs" />
     <Compile Include="DomainObjects\StudentBLL.cs" />
-    <Compile Include="InterfacesBLL\IService.cs" />
+    <Compile Include="DomainObjects\WorkerBLL.cs" />
+    <Compile Include="InterfacesBLL\IUserService.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,7 +70,6 @@
     <Compile Include="DataAccessClasses\PersonDAL.cs" />
     <Compile Include="InterfacesBLL\IRoomService.cs" />
     <Compile Include="InterfacesBLL\IServiceFactory.cs" />
-    <Compile Include="InterfacesBLL\IStudentService.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IRepositoryFactory.cs" />
     <Compile Include="Interfaces\IRoomRepository.cs" />
@@ -78,13 +78,24 @@
     <Compile Include="PGServer\PGRoomRepositoryFactory.cs" />
     <Compile Include="PGServer\PGStudentRepositoryFactory.cs" />
     <Compile Include="PGServer\PGStudentRepostirory.cs" />
+    <Compile Include="PGServer\PGWorkerRepository.cs" />
+    <Compile Include="PGServer\PGWorkerRepositoryFactory.cs" />
     <Compile Include="Presenters\LoginPresenter.cs" />
     <Compile Include="Presenters\UserRoomPresenter.cs" />
+    <Compile Include="Presenters\UsersFormPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataAccessClasses\StudentDAL.cs" />
     <Compile Include="ServicesBLL\StudentService.cs" />
     <Compile Include="ServicesBLL\StudentServiceFactory.cs" />
+    <Compile Include="ServicesBLL\WorkerService.cs" />
+    <Compile Include="ServicesBLL\WorkerServiceFactory.cs" />
+    <Compile Include="UserForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserForm.Designer.cs">
+      <DependentUpon>UserForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserRoomForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,6 +114,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UserForm.resx">
+      <DependentUpon>UserForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserRoomForm.resx">
       <DependentUpon>UserRoomForm.cs</DependentUpon>
     </EmbeddedResource>
