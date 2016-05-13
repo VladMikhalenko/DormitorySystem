@@ -9,60 +9,67 @@ using DormitoryProject.PGServer;
 using System.Data;
 using DormitoryProject.DomainObjects;
 using System.Windows.Forms;
+using DormitoryProject.DataAccessClasses;
 
 namespace DormitoryProject.Presenters
 {
     
     public class UsersFormPresenter
     {
-        private readonly string connectionString=string.Empty;
+        private readonly string roleToSend=string.Empty;
         private UserForm form;
-        private IEnumerable<Object> userList;
-        private IUserService service;
+        private IEnumerable<TicketBLL> userList;
+        private UserService service;
         private IServiceFactory serviceFactory;
-
+        #region Общее
         private string colHeaderLastName = "Фамилия";
         private string colHeaderName = "Имя";
         private string colHeaderPatr = "Отчество";
         private string colHeaderSerial = "Серия";
         private string colHeaderNumber = "Номер";
-
+        #endregion
+        #region Студент
         private string colHeaderCurs = "Курс";
         private string colHeaderFacult = "Факультет";
         private string colHeaderGroup = "Группа";
         private string colHeaderSpec = "Специальность";
         private string colHeaderRoom = "Комната";
-
+        #endregion
+        #region Рабочий
+        private string colHeaderWorkSpec = "Специализация";
+        private string colHeaderPhone = "Телефон";
+        #endregion
         private DataTable tableForValues = new DataTable();
 
         public UsersFormPresenter(UserForm form,string connection)
         {
             this.form = form;
-            this.connectionString = connection;
+            this.roleToSend = connection;
             buildStudTable();
-            getStudService();
-            getListOffAll();
+            getUserService();
+            getListOfStudents();
             fillStudentTable(userList);
             sendToGrid(tableForValues);
         }
 
-        public void getStudService()
+        public void getUserService()
         {
-            serviceFactory = new StudentServiceFactory(new PGStudentRepositoryFactory(connectionString));
-            service = serviceFactory.getStudentService();
-        }
-        public void getWorkService()
-        {
-            serviceFactory = new WorkerServiceFactory(new PGWorkerRepositoryFactory(connectionString));
-            service = serviceFactory.getWorkerService();
+            serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory(roleToSend));
+            service = serviceFactory.getUserService();
+            getListOfStudents();//????
         }
 
-        public void getListOffAll()
+        public void getListOfWorkers()
         {
-            userList = service.getAll();
+            userList = service.getAllWorkers();   
         }
 
-        public StudentBLL getStudentFromTextBoxes()
+        public void getListOfStudents()
+        {
+            userList = service.getAllStudents();
+        }
+
+        public StudentTicketBLL getStudentFromTextBoxes()
         {
             List<string> list = new List<string>();
             this.form.getTextBoxValues().ForEach(o=>list.Add(o.Text.ToString()));
@@ -79,69 +86,96 @@ namespace DormitoryProject.Presenters
             {
                 list[6]= "0";
             }
-            StudentBLL student= new StudentBLL
+            StudentTicketBLL student= new StudentTicketBLL
             {   
-                room = Convert.ToInt32(list[0]),
-                uLastName = list[1].ToString(),
-                uName = list[2].ToString(),
-                uPatr = list[3].ToString(),
-                sKurs = Convert.ToInt32(list[4]),
-                sFacult = list[5].ToString(),
-                sGroup= Convert.ToInt32(list[6]),
-                sSpec= list[7].ToString(),
-                uSerial=list[8].ToString(),
-                uNumber=list[9].ToString()
+                roomNumber = Convert.ToInt32(list[0]),
+                lastName = list[1].ToString(),
+                name = list[2].ToString(),
+                patronimic = list[3].ToString(),
+                kurs = Convert.ToInt32(list[4]),
+                facult = list[5].ToString(),
+                group= Convert.ToInt32(list[6]),
+                speciality= list[7].ToString(),
+                serial=list[8].ToString(),
+                number=list[9].ToString()
             };
             return student;
         }
+        public WorkerTicketBLL getWorkerFromTextBoxes()
+        {
+            List<string> list = new List<string>();
+            this.form.getTextBoxValues().ForEach(o => list.Add(o.Text.ToString()));
 
-        public void searchUser()
-        {
-            if(service is StudentService)
+            WorkerTicketBLL worker = new WorkerTicketBLL
             {
-                fillStudentTable(service.searchBy(getStudentFromTextBoxes()));
-                sendToGrid(tableForValues);
-            }
-            else if(service is WorkerService)
-            { }
-        }
-        public void addUser()
-        {
-            bool res = true;
-            res=service.addUser(getStudentFromTextBoxes());
-            if(res)
+                lastName = list[0].ToString(),
+                name = list[1].ToString(),
+                patronimic = list[2].ToString(),
+                speciality= list[3].ToString(),
+                phoneNumber= list[4].ToString(),
+                serial = list[5].ToString(),
+                number = list[6].ToString()
+            };
+            if(!form.getDayValue().Equals("не указано"))
             {
-                MessageBox.Show("Студент успешно добавлен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                WorkDayDAL wd = new WorkDayDAL
+                {
+                    day = form.getDayValue()
+                };
+                worker.workDays = new List<WorkDayDAL>();
+                worker.workDays.Add(wd);
             }
-            reloadGrid();
+            return worker;
         }
-        public void deleteUser()
+        public void searchWorker()
         {
-            bool res = true;
-            res=service.deleteUser(getStudentFromTextBoxes());
-            reloadGrid();
-            if(res)
-            {
-                MessageBox.Show("Студент удален", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-        public void resettleStudent()
-        {
-            bool res = true;
-            res=service.resettleStudent(getStudentFromTextBoxes());
-            reloadGrid();
-            if(res)
-            {
-                MessageBox.Show("Студент успешно переселен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        public void reloadGrid()
-        {
-            fillStudentTable(service.getAll());
+            fillWorkerTable(service.searchBy(getWorkerFromTextBoxes()));
             sendToGrid(tableForValues);
         }
-        private void buildStudTable()
+        public void searchStudent()
+        {
+            fillStudentTable(service.searchBy(getStudentFromTextBoxes()));
+            sendToGrid(tableForValues);
+        }
+        public void addStudent()
+        {
+            service.addUser(getStudentFromTextBoxes());
+            reloadStudGrid();
+        }
+        public void addWorker()
+        {
+            service.addUser(getWorkerFromTextBoxes());
+            reloadWorkerGrid();
+        }
+
+        public void deleteStudent()
+        {
+            service.deleteUser(getStudentFromTextBoxes());
+            reloadStudGrid();
+        }
+        public void deleteWorker()
+        {
+            service.deleteUser(getWorkerFromTextBoxes());
+            reloadWorkerGrid();
+        }
+
+        public void resettleStudent()
+        {
+            service.resettleStudent(getStudentFromTextBoxes());
+            reloadStudGrid();
+        }
+
+        public void reloadStudGrid()
+        {
+            fillStudentTable(service.getAllStudents());
+            sendToGrid(tableForValues);
+        }
+        public void reloadWorkerGrid()
+        {
+            fillWorkerTable(service.getAllWorkers());
+            sendToGrid(tableForValues);
+        }
+        public void buildStudTable()
         {
             tableForValues = new DataTable();
             DataColumn 
@@ -170,28 +204,83 @@ namespace DormitoryProject.Presenters
             tableForValues.Columns.Add(numberCol);
 
         }
-        private void buildWorkTable()
+        public void buildWorkTable()
         {
-            //организовал поиск в таблице студентов, дальше делаем поселение - выселение- переселение, все будет хорошо
+            tableForValues = new DataTable();
+            DataColumn
+                serialCol = new DataColumn(colHeaderSerial, typeof(string)),
+                numberCol = new DataColumn(colHeaderNumber, typeof(string)),
+                lastNameCol = new DataColumn(colHeaderLastName, typeof(string)),
+                nameCol = new DataColumn(colHeaderName, typeof(string)),
+                patrCol = new DataColumn(colHeaderPatr, typeof(string)),
+                specCol = new DataColumn(colHeaderWorkSpec, typeof(string)),
+                phoneCol = new DataColumn(colHeaderPhone, typeof(string));
+            patrCol.AllowDBNull = true;
+
+            tableForValues.Columns.Add(lastNameCol);
+            tableForValues.Columns.Add(nameCol);
+            tableForValues.Columns.Add(patrCol);
+            tableForValues.Columns.Add(specCol);
+            tableForValues.Columns.Add(phoneCol);
+            tableForValues.Columns.Add(serialCol);
+            tableForValues.Columns.Add(numberCol);
         }
 
-        public void fillStudentTable(IEnumerable<Object> list)
+        public WorkerTicketBLL findWorkerInUserListBySerial(string serial,string number)
+        {
+            WorkerTicketBLL worker = new WorkerTicketBLL();
+            foreach(WorkerTicketBLL w in userList)
+            {
+                if(w.serial==serial && w.number==number)
+                {
+                    worker = (w as WorkerTicketBLL);
+                    break;
+                }
+            }
+            return worker;
+        }
+        
+        public void fillWorkerTable(IEnumerable<TicketBLL> list)
+        {
+            buildWorkTable();
+            DataRow row;
+            StringBuilder sb = new StringBuilder();
+            foreach (WorkerTicketBLL w in list)
+            {
+                //WorkerTicketBLL w = (t as WorkerTicketBLL);
+                sb.Clear();
+                row = tableForValues.NewRow();
+                row[colHeaderLastName] = w.lastName;
+                row[colHeaderName] = w.name;
+                row[colHeaderPatr] = w.patronimic;
+                row[colHeaderWorkSpec] = w.speciality;
+                row[colHeaderPhone] = w.phoneNumber;
+                row[colHeaderSerial] = w.serial;
+                row[colHeaderNumber] = w.number;
+                //form.setWorkDaysText(w.)
+                //row[colHeaderDays] = sb.ToString();
+                tableForValues.Rows.Add(row);
+            }
+            tableForValues.AcceptChanges();
+        }
+        public void fillStudentTable(IEnumerable<TicketBLL> list)
         {
             buildStudTable();
             DataRow row;
-            foreach(StudentBLL s in list)
+            foreach(StudentTicketBLL s in list)
             {
+                //StudentTicketBLL s = (t as StudentTicketBLL);
                 row = tableForValues.NewRow();
-                row["Комната"] = s.room;
-                row["Фамилия"] = s.uLastName;
-                row["Имя"] = s.uName;
-                row["Отчество"] = s.uPatr;
-                row["Курс"] = s.sKurs;
-                row["Факультет"] = s.sFacult;
-                row["Группа"] = s.sGroup;
-                row["Специальность"] = s.sSpec;
-                row["Серия"] = s.uSerial;
-                row["Номер"] = s.uNumber;
+                row["Комната"] = s.roomNumber;
+                row["Фамилия"] = s.lastName;
+                row["Имя"] = s.name;
+                row["Отчество"] = s.patronimic;
+                row["Курс"] = s.kurs;
+                row["Факультет"] = s.facult;
+                row["Группа"] = s.group;
+                row["Специальность"] = s.speciality;
+                row["Серия"] = s.serial;
+                row["Номер"] = s.number;
                 tableForValues.Rows.Add(row);
             }
             tableForValues.AcceptChanges();

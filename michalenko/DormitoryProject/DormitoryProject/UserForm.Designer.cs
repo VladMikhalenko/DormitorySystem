@@ -41,13 +41,17 @@
             this.tbSpec = new System.Windows.Forms.TextBox();
             this.tbRoom = new System.Windows.Forms.TextBox();
             this.gbMenu = new System.Windows.Forms.GroupBox();
+            this.cbDays = new System.Windows.Forms.ComboBox();
+            this.listBoxWD = new System.Windows.Forms.ListBox();
+            this.btnReload = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
             this.rbResettle = new System.Windows.Forms.RadioButton();
             this.rbDelete = new System.Windows.Forms.RadioButton();
             this.rbAdd = new System.Windows.Forms.RadioButton();
             this.rbSearch = new System.Windows.Forms.RadioButton();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lbRoom = new System.Windows.Forms.Label();
+            this.lbSpec = new System.Windows.Forms.Label();
             this.lbGroup = new System.Windows.Forms.Label();
             this.lbFacult = new System.Windows.Forms.Label();
             this.lbKurs = new System.Windows.Forms.Label();
@@ -61,8 +65,7 @@
             this.списокСтудентовToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.списокРаботниковToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnClear = new System.Windows.Forms.Button();
-            this.btnReload = new System.Windows.Forms.Button();
+            this.btnWD = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.gbMenu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -158,6 +161,9 @@
             // 
             // gbMenu
             // 
+            this.gbMenu.Controls.Add(this.btnWD);
+            this.gbMenu.Controls.Add(this.cbDays);
+            this.gbMenu.Controls.Add(this.listBoxWD);
             this.gbMenu.Controls.Add(this.btnReload);
             this.gbMenu.Controls.Add(this.btnClear);
             this.gbMenu.Controls.Add(this.btnApply);
@@ -165,8 +171,8 @@
             this.gbMenu.Controls.Add(this.rbDelete);
             this.gbMenu.Controls.Add(this.rbAdd);
             this.gbMenu.Controls.Add(this.rbSearch);
-            this.gbMenu.Controls.Add(this.label2);
-            this.gbMenu.Controls.Add(this.label1);
+            this.gbMenu.Controls.Add(this.lbRoom);
+            this.gbMenu.Controls.Add(this.lbSpec);
             this.gbMenu.Controls.Add(this.lbGroup);
             this.gbMenu.Controls.Add(this.tbRoom);
             this.gbMenu.Controls.Add(this.lbFacult);
@@ -193,11 +199,47 @@
             this.gbMenu.TabStop = false;
             this.gbMenu.Text = "Поиск";
             // 
+            // cbDays
+            // 
+            this.cbDays.FormattingEnabled = true;
+            this.cbDays.Location = new System.Drawing.Point(259, 107);
+            this.cbDays.Name = "cbDays";
+            this.cbDays.Size = new System.Drawing.Size(100, 21);
+            this.cbDays.TabIndex = 23;
+            // 
+            // listBoxWD
+            // 
+            this.listBoxWD.FormattingEnabled = true;
+            this.listBoxWD.Location = new System.Drawing.Point(173, 134);
+            this.listBoxWD.Name = "listBoxWD";
+            this.listBoxWD.Size = new System.Drawing.Size(186, 147);
+            this.listBoxWD.TabIndex = 22;
+            // 
+            // btnReload
+            // 
+            this.btnReload.Location = new System.Drawing.Point(8, 189);
+            this.btnReload.Name = "btnReload";
+            this.btnReload.Size = new System.Drawing.Size(75, 37);
+            this.btnReload.TabIndex = 21;
+            this.btnReload.Text = "Обновить";
+            this.btnReload.UseVisualStyleBackColor = true;
+            this.btnReload.Click += new System.EventHandler(this.btnReload_Click);
+            // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(89, 189);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(75, 37);
+            this.btnClear.TabIndex = 20;
+            this.btnClear.Text = "Очистить поля";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
             // btnApply
             // 
             this.btnApply.Location = new System.Drawing.Point(8, 228);
             this.btnApply.Name = "btnApply";
-            this.btnApply.Size = new System.Drawing.Size(77, 37);
+            this.btnApply.Size = new System.Drawing.Size(75, 37);
             this.btnApply.TabIndex = 19;
             this.btnApply.Text = "Выполнить";
             this.btnApply.UseVisualStyleBackColor = true;
@@ -251,28 +293,28 @@
             this.rbSearch.UseVisualStyleBackColor = true;
             this.rbSearch.CheckedChanged += new System.EventHandler(this.CheckedChanged);
             // 
-            // label2
+            // lbRoom
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(202, 166);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 13);
-            this.label2.TabIndex = 14;
-            this.label2.Text = "Комната";
+            this.lbRoom.AutoSize = true;
+            this.lbRoom.Location = new System.Drawing.Point(202, 166);
+            this.lbRoom.Name = "lbRoom";
+            this.lbRoom.Size = new System.Drawing.Size(51, 13);
+            this.lbRoom.TabIndex = 14;
+            this.lbRoom.Text = "Комната";
             // 
-            // label1
+            // lbSpec
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(173, 140);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(85, 13);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "Специальность";
+            this.lbSpec.AutoSize = true;
+            this.lbSpec.Location = new System.Drawing.Point(173, 140);
+            this.lbSpec.Name = "lbSpec";
+            this.lbSpec.Size = new System.Drawing.Size(85, 13);
+            this.lbSpec.TabIndex = 13;
+            this.lbSpec.Text = "Специальность";
             // 
             // lbGroup
             // 
             this.lbGroup.AutoSize = true;
-            this.lbGroup.Location = new System.Drawing.Point(210, 111);
+            this.lbGroup.Location = new System.Drawing.Point(211, 111);
             this.lbGroup.Name = "lbGroup";
             this.lbGroup.Size = new System.Drawing.Size(42, 13);
             this.lbGroup.TabIndex = 12;
@@ -281,7 +323,7 @@
             // lbFacult
             // 
             this.lbFacult.AutoSize = true;
-            this.lbFacult.Location = new System.Drawing.Point(189, 83);
+            this.lbFacult.Location = new System.Drawing.Point(190, 83);
             this.lbFacult.Name = "lbFacult";
             this.lbFacult.Size = new System.Drawing.Size(63, 13);
             this.lbFacult.TabIndex = 10;
@@ -290,7 +332,7 @@
             // lbKurs
             // 
             this.lbKurs.AutoSize = true;
-            this.lbKurs.Location = new System.Drawing.Point(221, 53);
+            this.lbKurs.Location = new System.Drawing.Point(222, 53);
             this.lbKurs.Name = "lbKurs";
             this.lbKurs.Size = new System.Drawing.Size(31, 13);
             this.lbKurs.TabIndex = 9;
@@ -380,26 +422,16 @@
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
             this.выходToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.выходToolStripMenuItem.Text = "Выход";
+            this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
-            // btnClear
+            // btnWD
             // 
-            this.btnClear.Location = new System.Drawing.Point(285, 228);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 53);
-            this.btnClear.TabIndex = 20;
-            this.btnClear.Text = "Очистить поля";
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // btnReload
-            // 
-            this.btnReload.Location = new System.Drawing.Point(92, 228);
-            this.btnReload.Name = "btnReload";
-            this.btnReload.Size = new System.Drawing.Size(75, 37);
-            this.btnReload.TabIndex = 21;
-            this.btnReload.Text = "Обновить";
-            this.btnReload.UseVisualStyleBackColor = true;
-            this.btnReload.Click += new System.EventHandler(this.btnReload_Click);
+            this.btnWD.Location = new System.Drawing.Point(89, 228);
+            this.btnWD.Name = "btnWD";
+            this.btnWD.Size = new System.Drawing.Size(75, 37);
+            this.btnWD.TabIndex = 24;
+            this.btnWD.Text = "Указать дни";
+            this.btnWD.UseVisualStyleBackColor = true;
             // 
             // UserForm
             // 
@@ -449,8 +481,8 @@
         private System.Windows.Forms.RadioButton rbDelete;
         private System.Windows.Forms.RadioButton rbAdd;
         private System.Windows.Forms.RadioButton rbSearch;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbRoom;
+        private System.Windows.Forms.Label lbSpec;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem действияToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem списокСтудентовToolStripMenuItem;
@@ -459,5 +491,8 @@
         private System.Windows.Forms.Button btnApply;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnReload;
+        private System.Windows.Forms.ListBox listBoxWD;
+        private System.Windows.Forms.ComboBox cbDays;
+        private System.Windows.Forms.Button btnWD;
     }
 }
