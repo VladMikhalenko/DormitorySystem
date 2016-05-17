@@ -59,22 +59,25 @@
             this.chbRestWed = new System.Windows.Forms.CheckBox();
             this.chbRestTue = new System.Windows.Forms.CheckBox();
             this.chbRestMon = new System.Windows.Forms.CheckBox();
-            this.cbRSunE = new System.Windows.Forms.ComboBox();
-            this.cbRSunS = new System.Windows.Forms.ComboBox();
-            this.cbRSatE = new System.Windows.Forms.ComboBox();
-            this.cbRSatS = new System.Windows.Forms.ComboBox();
-            this.cbRFriE = new System.Windows.Forms.ComboBox();
-            this.cbRFriS = new System.Windows.Forms.ComboBox();
-            this.cbRThuE = new System.Windows.Forms.ComboBox();
-            this.cbRThuS = new System.Windows.Forms.ComboBox();
-            this.cbRWedE = new System.Windows.Forms.ComboBox();
-            this.cbRWedS = new System.Windows.Forms.ComboBox();
-            this.cbRTueE = new System.Windows.Forms.ComboBox();
-            this.cbRTueS = new System.Windows.Forms.ComboBox();
-            this.cbRMonE = new System.Windows.Forms.ComboBox();
-            this.cbRMonS = new System.Windows.Forms.ComboBox();
+            this.cbRestSunEnd = new System.Windows.Forms.ComboBox();
+            this.cbRestSunStart = new System.Windows.Forms.ComboBox();
+            this.cbRestSatEnd = new System.Windows.Forms.ComboBox();
+            this.cbRestSatStart = new System.Windows.Forms.ComboBox();
+            this.cbRestFriEnd = new System.Windows.Forms.ComboBox();
+            this.cbRestFriStart = new System.Windows.Forms.ComboBox();
+            this.cbRestThuEnd = new System.Windows.Forms.ComboBox();
+            this.cbRestThuStart = new System.Windows.Forms.ComboBox();
+            this.cbRestWedEnd = new System.Windows.Forms.ComboBox();
+            this.cbRestWedStart = new System.Windows.Forms.ComboBox();
+            this.cbRestTueEnd = new System.Windows.Forms.ComboBox();
+            this.cbRestTueStart = new System.Windows.Forms.ComboBox();
+            this.cbRestMonEnd = new System.Windows.Forms.ComboBox();
+            this.cbRestMonStart = new System.Windows.Forms.ComboBox();
             this.lbRS = new System.Windows.Forms.Label();
             this.lbRE = new System.Windows.Forms.Label();
+            this.btnConfirm = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // chbMon
@@ -86,6 +89,7 @@
             this.chbMon.TabIndex = 0;
             this.chbMon.Text = "Понедельник";
             this.chbMon.UseVisualStyleBackColor = true;
+            this.chbMon.CheckedChanged += new System.EventHandler(this.dayChecked);
             // 
             // chbTue
             // 
@@ -96,6 +100,7 @@
             this.chbTue.TabIndex = 1;
             this.chbTue.Text = "Вторник";
             this.chbTue.UseVisualStyleBackColor = true;
+            this.chbTue.CheckedChanged += new System.EventHandler(this.dayChecked);
             // 
             // chbWed
             // 
@@ -106,6 +111,7 @@
             this.chbWed.TabIndex = 2;
             this.chbWed.Text = "Среда";
             this.chbWed.UseVisualStyleBackColor = true;
+            this.chbWed.CheckedChanged += new System.EventHandler(this.dayChecked);
             // 
             // chbThu
             // 
@@ -116,6 +122,7 @@
             this.chbThu.TabIndex = 3;
             this.chbThu.Text = "Четверг";
             this.chbThu.UseVisualStyleBackColor = true;
+            this.chbThu.CheckedChanged += new System.EventHandler(this.dayChecked);
             // 
             // chbFri
             // 
@@ -126,6 +133,7 @@
             this.chbFri.TabIndex = 4;
             this.chbFri.Text = "Пятница";
             this.chbFri.UseVisualStyleBackColor = true;
+            this.chbFri.CheckedChanged += new System.EventHandler(this.dayChecked);
             // 
             // chbSat
             // 
@@ -136,6 +144,7 @@
             this.chbSat.TabIndex = 5;
             this.chbSat.Text = "Суббота";
             this.chbSat.UseVisualStyleBackColor = true;
+            this.chbSat.CheckedChanged += new System.EventHandler(this.dayChecked);
             // 
             // chbSun
             // 
@@ -146,13 +155,14 @@
             this.chbSun.TabIndex = 6;
             this.chbSun.Text = "Воскресенье";
             this.chbSun.UseVisualStyleBackColor = true;
+            this.chbSun.CheckedChanged += new System.EventHandler(this.dayChecked);
             // 
             // cbMonStart
             // 
             this.cbMonStart.FormattingEnabled = true;
             this.cbMonStart.Location = new System.Drawing.Point(128, 46);
             this.cbMonStart.Name = "cbMonStart";
-            this.cbMonStart.Size = new System.Drawing.Size(48, 21);
+            this.cbMonStart.Size = new System.Drawing.Size(58, 21);
             this.cbMonStart.TabIndex = 7;
             // 
             // cbMonEnd
@@ -160,7 +170,7 @@
             this.cbMonEnd.FormattingEnabled = true;
             this.cbMonEnd.Location = new System.Drawing.Point(214, 46);
             this.cbMonEnd.Name = "cbMonEnd";
-            this.cbMonEnd.Size = new System.Drawing.Size(48, 21);
+            this.cbMonEnd.Size = new System.Drawing.Size(57, 21);
             this.cbMonEnd.TabIndex = 8;
             // 
             // cbTueStart
@@ -168,7 +178,7 @@
             this.cbTueStart.FormattingEnabled = true;
             this.cbTueStart.Location = new System.Drawing.Point(128, 70);
             this.cbTueStart.Name = "cbTueStart";
-            this.cbTueStart.Size = new System.Drawing.Size(48, 21);
+            this.cbTueStart.Size = new System.Drawing.Size(58, 21);
             this.cbTueStart.TabIndex = 9;
             // 
             // cbTueEnd
@@ -176,7 +186,7 @@
             this.cbTueEnd.FormattingEnabled = true;
             this.cbTueEnd.Location = new System.Drawing.Point(214, 70);
             this.cbTueEnd.Name = "cbTueEnd";
-            this.cbTueEnd.Size = new System.Drawing.Size(48, 21);
+            this.cbTueEnd.Size = new System.Drawing.Size(57, 21);
             this.cbTueEnd.TabIndex = 10;
             // 
             // cbWedStart
@@ -184,7 +194,7 @@
             this.cbWedStart.FormattingEnabled = true;
             this.cbWedStart.Location = new System.Drawing.Point(128, 94);
             this.cbWedStart.Name = "cbWedStart";
-            this.cbWedStart.Size = new System.Drawing.Size(48, 21);
+            this.cbWedStart.Size = new System.Drawing.Size(58, 21);
             this.cbWedStart.TabIndex = 11;
             // 
             // cbWedEnd
@@ -192,7 +202,7 @@
             this.cbWedEnd.FormattingEnabled = true;
             this.cbWedEnd.Location = new System.Drawing.Point(214, 94);
             this.cbWedEnd.Name = "cbWedEnd";
-            this.cbWedEnd.Size = new System.Drawing.Size(48, 21);
+            this.cbWedEnd.Size = new System.Drawing.Size(57, 21);
             this.cbWedEnd.TabIndex = 12;
             // 
             // cbThuStart
@@ -200,7 +210,7 @@
             this.cbThuStart.FormattingEnabled = true;
             this.cbThuStart.Location = new System.Drawing.Point(128, 118);
             this.cbThuStart.Name = "cbThuStart";
-            this.cbThuStart.Size = new System.Drawing.Size(48, 21);
+            this.cbThuStart.Size = new System.Drawing.Size(58, 21);
             this.cbThuStart.TabIndex = 13;
             // 
             // cbThuEnd
@@ -208,7 +218,7 @@
             this.cbThuEnd.FormattingEnabled = true;
             this.cbThuEnd.Location = new System.Drawing.Point(214, 118);
             this.cbThuEnd.Name = "cbThuEnd";
-            this.cbThuEnd.Size = new System.Drawing.Size(48, 21);
+            this.cbThuEnd.Size = new System.Drawing.Size(57, 21);
             this.cbThuEnd.TabIndex = 14;
             // 
             // cbFriStart
@@ -216,7 +226,7 @@
             this.cbFriStart.FormattingEnabled = true;
             this.cbFriStart.Location = new System.Drawing.Point(128, 142);
             this.cbFriStart.Name = "cbFriStart";
-            this.cbFriStart.Size = new System.Drawing.Size(48, 21);
+            this.cbFriStart.Size = new System.Drawing.Size(58, 21);
             this.cbFriStart.TabIndex = 15;
             // 
             // cbFriEnd
@@ -224,7 +234,7 @@
             this.cbFriEnd.FormattingEnabled = true;
             this.cbFriEnd.Location = new System.Drawing.Point(214, 142);
             this.cbFriEnd.Name = "cbFriEnd";
-            this.cbFriEnd.Size = new System.Drawing.Size(48, 21);
+            this.cbFriEnd.Size = new System.Drawing.Size(57, 21);
             this.cbFriEnd.TabIndex = 16;
             // 
             // cbSatStart
@@ -232,7 +242,7 @@
             this.cbSatStart.FormattingEnabled = true;
             this.cbSatStart.Location = new System.Drawing.Point(128, 166);
             this.cbSatStart.Name = "cbSatStart";
-            this.cbSatStart.Size = new System.Drawing.Size(48, 21);
+            this.cbSatStart.Size = new System.Drawing.Size(58, 21);
             this.cbSatStart.TabIndex = 17;
             // 
             // cbSatEnd
@@ -240,7 +250,7 @@
             this.cbSatEnd.FormattingEnabled = true;
             this.cbSatEnd.Location = new System.Drawing.Point(214, 166);
             this.cbSatEnd.Name = "cbSatEnd";
-            this.cbSatEnd.Size = new System.Drawing.Size(48, 21);
+            this.cbSatEnd.Size = new System.Drawing.Size(57, 21);
             this.cbSatEnd.TabIndex = 18;
             // 
             // cbSunStart
@@ -248,7 +258,7 @@
             this.cbSunStart.FormattingEnabled = true;
             this.cbSunStart.Location = new System.Drawing.Point(128, 190);
             this.cbSunStart.Name = "cbSunStart";
-            this.cbSunStart.Size = new System.Drawing.Size(48, 21);
+            this.cbSunStart.Size = new System.Drawing.Size(58, 21);
             this.cbSunStart.TabIndex = 19;
             // 
             // cbSunEnd
@@ -256,7 +266,7 @@
             this.cbSunEnd.FormattingEnabled = true;
             this.cbSunEnd.Location = new System.Drawing.Point(214, 190);
             this.cbSunEnd.Name = "cbSunEnd";
-            this.cbSunEnd.Size = new System.Drawing.Size(48, 21);
+            this.cbSunEnd.Size = new System.Drawing.Size(57, 21);
             this.cbSunEnd.TabIndex = 20;
             // 
             // label1
@@ -295,6 +305,7 @@
             this.chbRestSun.TabIndex = 30;
             this.chbRestSun.Text = "Перерыв";
             this.chbRestSun.UseVisualStyleBackColor = true;
+            this.chbRestSun.CheckedChanged += new System.EventHandler(this.restChecked);
             // 
             // chbRestSat
             // 
@@ -305,6 +316,7 @@
             this.chbRestSat.TabIndex = 29;
             this.chbRestSat.Text = "Перерыв";
             this.chbRestSat.UseVisualStyleBackColor = true;
+            this.chbRestSat.CheckedChanged += new System.EventHandler(this.restChecked);
             // 
             // chbRestFri
             // 
@@ -315,6 +327,7 @@
             this.chbRestFri.TabIndex = 28;
             this.chbRestFri.Text = "Перерыв";
             this.chbRestFri.UseVisualStyleBackColor = true;
+            this.chbRestFri.CheckedChanged += new System.EventHandler(this.restChecked);
             // 
             // chbRestThu
             // 
@@ -325,6 +338,7 @@
             this.chbRestThu.TabIndex = 27;
             this.chbRestThu.Text = "Перерыв";
             this.chbRestThu.UseVisualStyleBackColor = true;
+            this.chbRestThu.CheckedChanged += new System.EventHandler(this.restChecked);
             // 
             // chbRestWed
             // 
@@ -335,6 +349,7 @@
             this.chbRestWed.TabIndex = 26;
             this.chbRestWed.Text = "Перерыв";
             this.chbRestWed.UseVisualStyleBackColor = true;
+            this.chbRestWed.CheckedChanged += new System.EventHandler(this.restChecked);
             // 
             // chbRestTue
             // 
@@ -345,6 +360,7 @@
             this.chbRestTue.TabIndex = 25;
             this.chbRestTue.Text = "Перерыв";
             this.chbRestTue.UseVisualStyleBackColor = true;
+            this.chbRestTue.CheckedChanged += new System.EventHandler(this.restChecked);
             // 
             // chbRestMon
             // 
@@ -355,118 +371,119 @@
             this.chbRestMon.TabIndex = 24;
             this.chbRestMon.Text = "Перерыв";
             this.chbRestMon.UseVisualStyleBackColor = true;
+            this.chbRestMon.CheckedChanged += new System.EventHandler(this.restChecked);
             // 
-            // cbRSunE
+            // cbRestSunEnd
             // 
-            this.cbRSunE.FormattingEnabled = true;
-            this.cbRSunE.Location = new System.Drawing.Point(447, 190);
-            this.cbRSunE.Name = "cbRSunE";
-            this.cbRSunE.Size = new System.Drawing.Size(48, 21);
-            this.cbRSunE.TabIndex = 44;
+            this.cbRestSunEnd.FormattingEnabled = true;
+            this.cbRestSunEnd.Location = new System.Drawing.Point(447, 190);
+            this.cbRestSunEnd.Name = "cbRestSunEnd";
+            this.cbRestSunEnd.Size = new System.Drawing.Size(58, 21);
+            this.cbRestSunEnd.TabIndex = 44;
             // 
-            // cbRSunS
+            // cbRestSunStart
             // 
-            this.cbRSunS.FormattingEnabled = true;
-            this.cbRSunS.Location = new System.Drawing.Point(361, 190);
-            this.cbRSunS.Name = "cbRSunS";
-            this.cbRSunS.Size = new System.Drawing.Size(48, 21);
-            this.cbRSunS.TabIndex = 43;
+            this.cbRestSunStart.FormattingEnabled = true;
+            this.cbRestSunStart.Location = new System.Drawing.Point(361, 190);
+            this.cbRestSunStart.Name = "cbRestSunStart";
+            this.cbRestSunStart.Size = new System.Drawing.Size(57, 21);
+            this.cbRestSunStart.TabIndex = 43;
             // 
-            // cbRSatE
+            // cbRestSatEnd
             // 
-            this.cbRSatE.FormattingEnabled = true;
-            this.cbRSatE.Location = new System.Drawing.Point(447, 166);
-            this.cbRSatE.Name = "cbRSatE";
-            this.cbRSatE.Size = new System.Drawing.Size(48, 21);
-            this.cbRSatE.TabIndex = 42;
+            this.cbRestSatEnd.FormattingEnabled = true;
+            this.cbRestSatEnd.Location = new System.Drawing.Point(447, 166);
+            this.cbRestSatEnd.Name = "cbRestSatEnd";
+            this.cbRestSatEnd.Size = new System.Drawing.Size(58, 21);
+            this.cbRestSatEnd.TabIndex = 42;
             // 
-            // cbRSatS
+            // cbRestSatStart
             // 
-            this.cbRSatS.FormattingEnabled = true;
-            this.cbRSatS.Location = new System.Drawing.Point(361, 166);
-            this.cbRSatS.Name = "cbRSatS";
-            this.cbRSatS.Size = new System.Drawing.Size(48, 21);
-            this.cbRSatS.TabIndex = 41;
+            this.cbRestSatStart.FormattingEnabled = true;
+            this.cbRestSatStart.Location = new System.Drawing.Point(361, 166);
+            this.cbRestSatStart.Name = "cbRestSatStart";
+            this.cbRestSatStart.Size = new System.Drawing.Size(57, 21);
+            this.cbRestSatStart.TabIndex = 41;
             // 
-            // cbRFriE
+            // cbRestFriEnd
             // 
-            this.cbRFriE.FormattingEnabled = true;
-            this.cbRFriE.Location = new System.Drawing.Point(447, 142);
-            this.cbRFriE.Name = "cbRFriE";
-            this.cbRFriE.Size = new System.Drawing.Size(48, 21);
-            this.cbRFriE.TabIndex = 40;
+            this.cbRestFriEnd.FormattingEnabled = true;
+            this.cbRestFriEnd.Location = new System.Drawing.Point(447, 142);
+            this.cbRestFriEnd.Name = "cbRestFriEnd";
+            this.cbRestFriEnd.Size = new System.Drawing.Size(58, 21);
+            this.cbRestFriEnd.TabIndex = 40;
             // 
-            // cbRFriS
+            // cbRestFriStart
             // 
-            this.cbRFriS.FormattingEnabled = true;
-            this.cbRFriS.Location = new System.Drawing.Point(361, 142);
-            this.cbRFriS.Name = "cbRFriS";
-            this.cbRFriS.Size = new System.Drawing.Size(48, 21);
-            this.cbRFriS.TabIndex = 39;
+            this.cbRestFriStart.FormattingEnabled = true;
+            this.cbRestFriStart.Location = new System.Drawing.Point(361, 142);
+            this.cbRestFriStart.Name = "cbRestFriStart";
+            this.cbRestFriStart.Size = new System.Drawing.Size(57, 21);
+            this.cbRestFriStart.TabIndex = 39;
             // 
-            // cbRThuE
+            // cbRestThuEnd
             // 
-            this.cbRThuE.FormattingEnabled = true;
-            this.cbRThuE.Location = new System.Drawing.Point(447, 118);
-            this.cbRThuE.Name = "cbRThuE";
-            this.cbRThuE.Size = new System.Drawing.Size(48, 21);
-            this.cbRThuE.TabIndex = 38;
+            this.cbRestThuEnd.FormattingEnabled = true;
+            this.cbRestThuEnd.Location = new System.Drawing.Point(447, 118);
+            this.cbRestThuEnd.Name = "cbRestThuEnd";
+            this.cbRestThuEnd.Size = new System.Drawing.Size(58, 21);
+            this.cbRestThuEnd.TabIndex = 38;
             // 
-            // cbRThuS
+            // cbRestThuStart
             // 
-            this.cbRThuS.FormattingEnabled = true;
-            this.cbRThuS.Location = new System.Drawing.Point(361, 118);
-            this.cbRThuS.Name = "cbRThuS";
-            this.cbRThuS.Size = new System.Drawing.Size(48, 21);
-            this.cbRThuS.TabIndex = 37;
+            this.cbRestThuStart.FormattingEnabled = true;
+            this.cbRestThuStart.Location = new System.Drawing.Point(361, 118);
+            this.cbRestThuStart.Name = "cbRestThuStart";
+            this.cbRestThuStart.Size = new System.Drawing.Size(57, 21);
+            this.cbRestThuStart.TabIndex = 37;
             // 
-            // cbRWedE
+            // cbRestWedEnd
             // 
-            this.cbRWedE.FormattingEnabled = true;
-            this.cbRWedE.Location = new System.Drawing.Point(447, 94);
-            this.cbRWedE.Name = "cbRWedE";
-            this.cbRWedE.Size = new System.Drawing.Size(48, 21);
-            this.cbRWedE.TabIndex = 36;
+            this.cbRestWedEnd.FormattingEnabled = true;
+            this.cbRestWedEnd.Location = new System.Drawing.Point(447, 94);
+            this.cbRestWedEnd.Name = "cbRestWedEnd";
+            this.cbRestWedEnd.Size = new System.Drawing.Size(58, 21);
+            this.cbRestWedEnd.TabIndex = 36;
             // 
-            // cbRWedS
+            // cbRestWedStart
             // 
-            this.cbRWedS.FormattingEnabled = true;
-            this.cbRWedS.Location = new System.Drawing.Point(361, 94);
-            this.cbRWedS.Name = "cbRWedS";
-            this.cbRWedS.Size = new System.Drawing.Size(48, 21);
-            this.cbRWedS.TabIndex = 35;
+            this.cbRestWedStart.FormattingEnabled = true;
+            this.cbRestWedStart.Location = new System.Drawing.Point(361, 94);
+            this.cbRestWedStart.Name = "cbRestWedStart";
+            this.cbRestWedStart.Size = new System.Drawing.Size(57, 21);
+            this.cbRestWedStart.TabIndex = 35;
             // 
-            // cbRTueE
+            // cbRestTueEnd
             // 
-            this.cbRTueE.FormattingEnabled = true;
-            this.cbRTueE.Location = new System.Drawing.Point(447, 70);
-            this.cbRTueE.Name = "cbRTueE";
-            this.cbRTueE.Size = new System.Drawing.Size(48, 21);
-            this.cbRTueE.TabIndex = 34;
+            this.cbRestTueEnd.FormattingEnabled = true;
+            this.cbRestTueEnd.Location = new System.Drawing.Point(447, 70);
+            this.cbRestTueEnd.Name = "cbRestTueEnd";
+            this.cbRestTueEnd.Size = new System.Drawing.Size(58, 21);
+            this.cbRestTueEnd.TabIndex = 34;
             // 
-            // cbRTueS
+            // cbRestTueStart
             // 
-            this.cbRTueS.FormattingEnabled = true;
-            this.cbRTueS.Location = new System.Drawing.Point(361, 70);
-            this.cbRTueS.Name = "cbRTueS";
-            this.cbRTueS.Size = new System.Drawing.Size(48, 21);
-            this.cbRTueS.TabIndex = 33;
+            this.cbRestTueStart.FormattingEnabled = true;
+            this.cbRestTueStart.Location = new System.Drawing.Point(361, 70);
+            this.cbRestTueStart.Name = "cbRestTueStart";
+            this.cbRestTueStart.Size = new System.Drawing.Size(57, 21);
+            this.cbRestTueStart.TabIndex = 33;
             // 
-            // cbRMonE
+            // cbRestMonEnd
             // 
-            this.cbRMonE.FormattingEnabled = true;
-            this.cbRMonE.Location = new System.Drawing.Point(447, 46);
-            this.cbRMonE.Name = "cbRMonE";
-            this.cbRMonE.Size = new System.Drawing.Size(48, 21);
-            this.cbRMonE.TabIndex = 32;
+            this.cbRestMonEnd.FormattingEnabled = true;
+            this.cbRestMonEnd.Location = new System.Drawing.Point(447, 46);
+            this.cbRestMonEnd.Name = "cbRestMonEnd";
+            this.cbRestMonEnd.Size = new System.Drawing.Size(58, 21);
+            this.cbRestMonEnd.TabIndex = 32;
             // 
-            // cbRMonS
+            // cbRestMonStart
             // 
-            this.cbRMonS.FormattingEnabled = true;
-            this.cbRMonS.Location = new System.Drawing.Point(361, 46);
-            this.cbRMonS.Name = "cbRMonS";
-            this.cbRMonS.Size = new System.Drawing.Size(48, 21);
-            this.cbRMonS.TabIndex = 31;
+            this.cbRestMonStart.FormattingEnabled = true;
+            this.cbRestMonStart.Location = new System.Drawing.Point(361, 46);
+            this.cbRestMonStart.Name = "cbRestMonStart";
+            this.cbRestMonStart.Size = new System.Drawing.Size(57, 21);
+            this.cbRestMonStart.TabIndex = 31;
             // 
             // lbRS
             // 
@@ -486,27 +503,60 @@
             this.lbRE.TabIndex = 46;
             this.lbRE.Text = "4";
             // 
+            // btnConfirm
+            // 
+            this.btnConfirm.Location = new System.Drawing.Point(15, 226);
+            this.btnConfirm.Name = "btnConfirm";
+            this.btnConfirm.Size = new System.Drawing.Size(90, 23);
+            this.btnConfirm.TabIndex = 47;
+            this.btnConfirm.Text = "Подтвердить";
+            this.btnConfirm.UseVisualStyleBackColor = true;
+            this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
+            // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(111, 226);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(85, 23);
+            this.btnClear.TabIndex = 48;
+            this.btnClear.Text = "Сброс";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.Location = new System.Drawing.Point(447, 226);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(80, 23);
+            this.btnCancel.TabIndex = 49;
+            this.btnCancel.Text = "Отмена";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
             // WorkDaysForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(539, 261);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnClear);
+            this.Controls.Add(this.btnConfirm);
             this.Controls.Add(this.lbRE);
             this.Controls.Add(this.lbRS);
-            this.Controls.Add(this.cbRSunE);
-            this.Controls.Add(this.cbRSunS);
-            this.Controls.Add(this.cbRSatE);
-            this.Controls.Add(this.cbRSatS);
-            this.Controls.Add(this.cbRFriE);
-            this.Controls.Add(this.cbRFriS);
-            this.Controls.Add(this.cbRThuE);
-            this.Controls.Add(this.cbRThuS);
-            this.Controls.Add(this.cbRWedE);
-            this.Controls.Add(this.cbRWedS);
-            this.Controls.Add(this.cbRTueE);
-            this.Controls.Add(this.cbRTueS);
-            this.Controls.Add(this.cbRMonE);
-            this.Controls.Add(this.cbRMonS);
+            this.Controls.Add(this.cbRestSunEnd);
+            this.Controls.Add(this.cbRestSunStart);
+            this.Controls.Add(this.cbRestSatEnd);
+            this.Controls.Add(this.cbRestSatStart);
+            this.Controls.Add(this.cbRestFriEnd);
+            this.Controls.Add(this.cbRestFriStart);
+            this.Controls.Add(this.cbRestThuEnd);
+            this.Controls.Add(this.cbRestThuStart);
+            this.Controls.Add(this.cbRestWedEnd);
+            this.Controls.Add(this.cbRestWedStart);
+            this.Controls.Add(this.cbRestTueEnd);
+            this.Controls.Add(this.cbRestTueStart);
+            this.Controls.Add(this.cbRestMonEnd);
+            this.Controls.Add(this.cbRestMonStart);
             this.Controls.Add(this.chbRestSun);
             this.Controls.Add(this.chbRestSat);
             this.Controls.Add(this.chbRestFri);
@@ -578,21 +628,24 @@
         private System.Windows.Forms.CheckBox chbRestWed;
         private System.Windows.Forms.CheckBox chbRestTue;
         private System.Windows.Forms.CheckBox chbRestMon;
-        private System.Windows.Forms.ComboBox cbRSunE;
-        private System.Windows.Forms.ComboBox cbRSunS;
-        private System.Windows.Forms.ComboBox cbRSatE;
-        private System.Windows.Forms.ComboBox cbRSatS;
-        private System.Windows.Forms.ComboBox cbRFriE;
-        private System.Windows.Forms.ComboBox cbRFriS;
-        private System.Windows.Forms.ComboBox cbRThuE;
-        private System.Windows.Forms.ComboBox cbRThuS;
-        private System.Windows.Forms.ComboBox cbRWedE;
-        private System.Windows.Forms.ComboBox cbRWedS;
-        private System.Windows.Forms.ComboBox cbRTueE;
-        private System.Windows.Forms.ComboBox cbRTueS;
-        private System.Windows.Forms.ComboBox cbRMonE;
-        private System.Windows.Forms.ComboBox cbRMonS;
+        private System.Windows.Forms.ComboBox cbRestSunEnd;
+        private System.Windows.Forms.ComboBox cbRestSunStart;
+        private System.Windows.Forms.ComboBox cbRestSatEnd;
+        private System.Windows.Forms.ComboBox cbRestSatStart;
+        private System.Windows.Forms.ComboBox cbRestFriEnd;
+        private System.Windows.Forms.ComboBox cbRestFriStart;
+        private System.Windows.Forms.ComboBox cbRestThuEnd;
+        private System.Windows.Forms.ComboBox cbRestThuStart;
+        private System.Windows.Forms.ComboBox cbRestWedEnd;
+        private System.Windows.Forms.ComboBox cbRestWedStart;
+        private System.Windows.Forms.ComboBox cbRestTueEnd;
+        private System.Windows.Forms.ComboBox cbRestTueStart;
+        private System.Windows.Forms.ComboBox cbRestMonEnd;
+        private System.Windows.Forms.ComboBox cbRestMonStart;
         private System.Windows.Forms.Label lbRS;
         private System.Windows.Forms.Label lbRE;
+        private System.Windows.Forms.Button btnConfirm;
+        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

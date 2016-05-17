@@ -83,14 +83,14 @@ namespace DormitoryProject.PGServer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка добавления записи в БД! Сообщение:" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка добавления записи в БД! Сообщение:" + ex.Message.Substring(6, ex.Message.Length - 6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
         public void addUser(WorkerTicketDAL worker)
         {
-            string addQuery = "SELECT hire('Р',@serial,@number,@last_name,@name,@patr,@spec,@phone)";
+            string addQuery = "SELECT hire_worker(@serial,@number,@last_name,@name,@patr,@spec,@phone)";
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
@@ -112,16 +112,55 @@ namespace DormitoryProject.PGServer
                 try
                 {
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Работник успешно добавлен в БД", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка добавления записи в БД! Сообщение:" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка добавления записи в БД! Сообщение:" + ex.Message.Substring(6,ex.Message.Length-6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                foreach(WorkDayDAL day in worker.workDays)
+                {
+                    addWorkDay(worker.serial, worker.number, day);
+                }
+
+            }
+        }
+
+        private void addWorkDay(string serial,string number,WorkDayDAL day)
+        {
+            string addQuery = "SELECT add_work_day(@serial,@number,@work_day,@work_start,@work_end,@rest_start,@rest_end)";
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                NpgsqlCommand cmd = new NpgsqlCommand(addQuery, conn);
+                cmd.Parameters.AddWithValue("@serial", serial);
+                cmd.Parameters.AddWithValue("@number", number);
+                cmd.Parameters.AddWithValue("@work_day", day.day);
+                cmd.Parameters.AddWithValue("@work_start", day.startTime);
+                cmd.Parameters.AddWithValue("@work_end", day.endTime);
+
+                if (day.restStart== null || day.restEnd==null)
+                {
+                    cmd.Parameters.AddWithValue("@rest_start", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@rest_end", DBNull.Value);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@rest_start", day.restStart);
+                    cmd.Parameters.AddWithValue("@rest_end", day.restEnd);
+                }
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка добавления записи в БД! Сообщение:" + ex.Message.Substring(6,ex.Message.Length-6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        public string buildConnectionString(string role,string password)
+        private string buildConnectionString(string role,string password)
         {
             return string.Format("Server = 127.0.0.1; Port=5432;User Id = {0}; Password={1};Database=dormitory;", role,password);
         }
@@ -145,7 +184,7 @@ namespace DormitoryProject.PGServer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка входа! Текст ошибки: " + ex.Message, "Ошибка входа", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка входа! Текст ошибки: " + ex.Message.Substring(6, ex.Message.Length - 6), "Ошибка входа", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
             }
@@ -233,21 +272,21 @@ namespace DormitoryProject.PGServer
 
         public void removeBySerial(WorkerTicketDAL worker)
         {
-            string delQuery = "DELETE FROM work_view WHERE u_serial=@u_serial AND u_number=@u_number";
+            string delQuery = "SELECT delete_worker(@serial,@number)";
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
                 NpgsqlCommand cmd = new NpgsqlCommand(delQuery, conn);
-                cmd.Parameters.AddWithValue("@u_serial", worker.serial);
-                cmd.Parameters.AddWithValue("@u_number", worker.number);
+                cmd.Parameters.AddWithValue("@serial", worker.serial);
+                cmd.Parameters.AddWithValue("@number", worker.number);
                 try
                 {
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Работник был успешно удален", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Работник успешно удален", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка удаления записи БД! Сообщение:" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка удаления записи БД! Сообщение:" + ex.Message.Substring(6, ex.Message.Length - 6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

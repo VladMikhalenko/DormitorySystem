@@ -41,10 +41,10 @@ namespace DormitoryProject.Presenters
         #endregion
         private DataTable tableForValues = new DataTable();
 
-        public UsersFormPresenter(UserForm form,string connection)
+        public UsersFormPresenter(UserForm form,string role)
         {
             this.form = form;
-            this.roleToSend = connection;
+            roleToSend = role;
             buildStudTable();
             getUserService();
             getListOfStudents();
@@ -56,9 +56,8 @@ namespace DormitoryProject.Presenters
         {
             serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory(roleToSend));
             service = serviceFactory.getUserService();
-            getListOfStudents();//????
+            getListOfStudents();
         }
-
         public void getListOfWorkers()
         {
             userList = service.getAllWorkers();   
@@ -127,6 +126,7 @@ namespace DormitoryProject.Presenters
             }
             return worker;
         }
+
         public void searchWorker()
         {
             fillWorkerTable(service.searchBy(getWorkerFromTextBoxes()));
@@ -137,6 +137,7 @@ namespace DormitoryProject.Presenters
             fillStudentTable(service.searchBy(getStudentFromTextBoxes()));
             sendToGrid(tableForValues);
         }
+
         public void addStudent()
         {
             service.addUser(getStudentFromTextBoxes());
@@ -144,8 +145,17 @@ namespace DormitoryProject.Presenters
         }
         public void addWorker()
         {
-            service.addUser(getWorkerFromTextBoxes());
-            reloadWorkerGrid();
+            WorkerTicketBLL worker = getWorkerFromTextBoxes();
+            if(openWorkDaysForm(ref worker))
+            {
+                service.addUser(worker);
+                getListOfWorkers();
+                reloadWorkerGrid();
+            }
+            else
+            {
+                MessageBox.Show("Рабочие дни не были указаны", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         public void deleteStudent()
@@ -175,6 +185,7 @@ namespace DormitoryProject.Presenters
             fillWorkerTable(service.getAllWorkers());
             sendToGrid(tableForValues);
         }
+
         public void buildStudTable()
         {
             tableForValues = new DataTable();
@@ -246,8 +257,7 @@ namespace DormitoryProject.Presenters
             DataRow row;
             StringBuilder sb = new StringBuilder();
             foreach (WorkerTicketBLL w in list)
-            {
-                //WorkerTicketBLL w = (t as WorkerTicketBLL);
+            { 
                 sb.Clear();
                 row = tableForValues.NewRow();
                 row[colHeaderLastName] = w.lastName;
@@ -257,8 +267,6 @@ namespace DormitoryProject.Presenters
                 row[colHeaderPhone] = w.phoneNumber;
                 row[colHeaderSerial] = w.serial;
                 row[colHeaderNumber] = w.number;
-                //form.setWorkDaysText(w.)
-                //row[colHeaderDays] = sb.ToString();
                 tableForValues.Rows.Add(row);
             }
             tableForValues.AcceptChanges();
@@ -269,7 +277,6 @@ namespace DormitoryProject.Presenters
             DataRow row;
             foreach(StudentTicketBLL s in list)
             {
-                //StudentTicketBLL s = (t as StudentTicketBLL);
                 row = tableForValues.NewRow();
                 row["Комната"] = s.roomNumber;
                 row["Фамилия"] = s.lastName;
@@ -288,6 +295,18 @@ namespace DormitoryProject.Presenters
         public void sendToGrid(DataTable table)
         {
             form.loadTable(table);
+        }
+
+        public bool openWorkDaysForm(ref WorkerTicketBLL worker)
+        {
+            WorkDaysForm wdForm = new WorkDaysForm(ref worker);
+            wdForm.ShowDialog();
+            bool result = false;
+            if(wdForm.DialogResult==DialogResult.OK)
+            {
+                result = true;
+            }
+            return result;
         }
     }
 }

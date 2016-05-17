@@ -65,7 +65,6 @@
             this.списокСтудентовToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.списокРаботниковToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnWD = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.gbMenu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -161,7 +160,6 @@
             // 
             // gbMenu
             // 
-            this.gbMenu.Controls.Add(this.btnWD);
             this.gbMenu.Controls.Add(this.cbDays);
             this.gbMenu.Controls.Add(this.listBoxWD);
             this.gbMenu.Controls.Add(this.btnReload);
@@ -424,15 +422,6 @@
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
-            // btnWD
-            // 
-            this.btnWD.Location = new System.Drawing.Point(89, 228);
-            this.btnWD.Name = "btnWD";
-            this.btnWD.Size = new System.Drawing.Size(75, 37);
-            this.btnWD.TabIndex = 24;
-            this.btnWD.Text = "Указать дни";
-            this.btnWD.UseVisualStyleBackColor = true;
-            // 
             // UserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -493,6 +482,5 @@
         private System.Windows.Forms.Button btnReload;
         private System.Windows.Forms.ListBox listBoxWD;
         private System.Windows.Forms.ComboBox cbDays;
-        private System.Windows.Forms.Button btnWD;
     }
 }

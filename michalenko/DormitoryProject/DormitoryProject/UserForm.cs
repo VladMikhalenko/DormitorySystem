@@ -19,11 +19,11 @@ namespace DormitoryProject
     {
         UsersFormPresenter presenter;
         public List<TextBox> tbList = new List<TextBox>();
-        public UserForm(UserRoomPresenter URP)
+        public UserForm(string role)
         {
             InitializeComponent();
             DGV.ReadOnly = true;
-            presenter = new UsersFormPresenter(this,URP.getCurrentRole());
+            presenter = new UsersFormPresenter(this,role);
             DGV.MultiSelect = false;
             hideWorkerControls();
             списокСтудентовToolStripMenuItem.Checked = true;
@@ -40,6 +40,42 @@ namespace DormitoryProject
         public void showWorkerControls()
         {
             listBoxWD.Visible = true;
+        }
+
+        private void unCheckRadioButton()
+        {
+            foreach(Control c in Controls)
+            {
+                if(c is GroupBox)
+                {
+                    foreach(Control g in c.Controls)
+                    {
+                        if (g is RadioButton)
+                        {
+                            (g as RadioButton).Checked = false;
+                        }
+                    }
+                }
+                if(c is RadioButton)
+                {
+                    (c as RadioButton).Checked = false;
+                }
+            }
+        }
+        private void enableTextBoxes()
+        {
+            foreach (TextBox t in tbList)
+            {
+                t.Enabled = true;
+            }
+        }
+
+        private void disableTextBoxes()
+        {
+            foreach(TextBox t in tbList)
+            {
+                t.Enabled = false;
+            }
         }
 
         public void hideStudentControls()
@@ -109,6 +145,10 @@ namespace DormitoryProject
             списокРаботниковToolStripMenuItem.Checked = false;
             hideWorkerControls();
             showStudentControls();
+            unCheckRadioButton();
+            enableTextBoxes();
+            clear();
+            #region Пару перемещений
             lbKurs.Text = "Курс";
             lbKurs.Location = new Point(222, 53); ;
             lbFacult.Text = "Факультет";
@@ -117,7 +157,7 @@ namespace DormitoryProject
             tbGroup.Visible = true;
             lbGroup.Text = "Группа";
             lbGroup.Location = new Point(211, 111);
-            clear();
+            #endregion
             addStudentTextBoxes();
             presenter.getUserService();
             presenter.getListOfStudents();
@@ -130,13 +170,17 @@ namespace DormitoryProject
             списокСтудентовToolStripMenuItem.Checked = false;
             hideStudentControls();
             showWorkerControls();
+            unCheckRadioButton();
+            enableTextBoxes();
+            clear();
+            #region Пару перемещений
             lbKurs.Text = "Специализация";
             lbKurs.Location = new Point(173, 53);
             lbFacult.Text = "Телефон";
             lbFacult.Location = new Point(205, 83);
             lbGroup.Text = "Рабочие дни:";
             lbGroup.Location = new Point(173, 111);
-            clear();
+            #endregion 
             addWorkerTextBoxes();
             presenter.getUserService();
             presenter.getListOfWorkers();
@@ -161,7 +205,6 @@ namespace DormitoryProject
                 {
                     presenter.searchWorker();
                 }
-                
             }
             else if(rbAdd.Checked)
             {
@@ -233,36 +276,20 @@ namespace DormitoryProject
             gbMenu.Text = rb.Text;
             if(rb.Text=="Удалить")
             {
-                if(списокСтудентовToolStripMenuItem.Checked)
-                {
-                    foreach (TextBox t in tbList)
-                    {
-                        t.Enabled = false;
-                    }
-                }
-                else if(списокРаботниковToolStripMenuItem.Checked)
-                {
-                    
-                }
-                
+                disableTextBoxes();
             }
             else if(rb.Text=="Переселить")
             {
+                enableTextBoxes();
                 for(int i=1;i<tbList.Count;i++)
                 {
                     tbList[i].Enabled = false;
                 }
             }
-            else if(rb.Text=="Поиск")
+            else
             {
-                if(списокСтудентовToolStripMenuItem.Checked)
-                {
-                    foreach (TextBox t in tbList)
-                    {
-                        t.Enabled = true;
-                    }
-                }
-                else if(списокРаботниковToolStripMenuItem.Checked)
+                enableTextBoxes();
+                if(списокРаботниковToolStripMenuItem.Checked && rbSearch.Checked)
                 {
                     cbDays.Visible = true;
                 }
@@ -325,5 +352,6 @@ namespace DormitoryProject
         {
             this.Close();
         }
+
     }
 }

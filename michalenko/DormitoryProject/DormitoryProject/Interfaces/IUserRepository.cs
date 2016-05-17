@@ -15,7 +15,6 @@ namespace DormitoryProject.Interfaces
         void updateInfo(TicketType user);
         bool checkUser(string userType, string serial, string number, string password);
         void resettleStudent(StudentTicketDAL student);
-        string buildConnectionString(string role,string password);
         IEnumerable<StudentTicketDAL> getAllStudents();
         IEnumerable<WorkerTicketDAL> getAllWorkers();
         IEnumerable<TicketType> searchBy(TicketType person);

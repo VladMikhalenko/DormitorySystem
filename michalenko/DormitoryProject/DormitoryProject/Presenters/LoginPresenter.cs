@@ -55,22 +55,22 @@ namespace DormitoryProject.Presenters
             serial = login.Substring(1, 2);
             number = login.Substring(3, login.Length-3);
             bool res = false;
-            if (userType.Equals("C"))
+            if(userType=="С")
             {
                 serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory("student"));
                 service = serviceFactory.getUserService();
             }
-            else if(userType.Equals("Р"))
+            else if(userType=="Р")
             {
                 serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory("worker"));
                 service = serviceFactory.getUserService();
             }
-            else if (userType.Equals("К"))
+            else if (userType == "К")
             {
                 serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory("komendant"));
                 service = serviceFactory.getUserService();
             }
-
+            //валидация ввода логина и пароля
             res = service.Authentication(userType, serial, number, password);
 
             if (res)

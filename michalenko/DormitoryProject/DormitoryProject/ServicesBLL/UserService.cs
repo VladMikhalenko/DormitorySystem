@@ -53,6 +53,10 @@ namespace DormitoryProject.ServicesBLL
                 phoneNumber = worker.phoneNumber,
                 spec = worker.speciality
             };
+            if (worker.workDays != null)
+            {
+                wDAL.workDays = worker.workDays;
+            }
             using (PGUserRepository repository = repositoryFactory.getUserRepository())
             {
                 repository.addUser(wDAL);
