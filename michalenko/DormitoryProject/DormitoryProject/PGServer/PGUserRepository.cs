@@ -198,7 +198,7 @@ namespace DormitoryProject.PGServer
         public WorkerTicketDAL findBySerial(WorkerTicketDAL worker)
         {
             string searchQuery = "SELECT u_serial,u_number,u_last_name,u_name,u_patr, spec,phone FROM workers WHERE u_serial=@serial AND u_number=@number";
-
+            WorkerTicketDAL result;
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
@@ -207,9 +207,12 @@ namespace DormitoryProject.PGServer
                 cmd.Parameters.AddWithValue("@number", worker.number);
                 using (NpgsqlDataReader reader = cmd.ExecuteReader())
                 {
-                    return fromReaderToWorker(reader);
+                    reader.Read();
+                    result= fromReaderToWorker(reader);
                 }
             }
+            getAllWorkDaysForWorker(ref result);
+            return result;
         }
 
         public StudentTicketDAL findBySerial(StudentTicketDAL student)
@@ -650,27 +653,27 @@ namespace DormitoryProject.PGServer
 
         public void updateInfo(StudentTicketDAL updatedStudent)
         {
-            string updateQuery = "UPDATE stud_view " +
+            string updateQuery = "UPDATE students " +
                                "SET u_last_name=@last_name," +
-                               "u_name=@name " +
-                               "u_patr=@patr " +
-                               "kurs=@kurs " +
-                               "spec=@spec " +
-                               "facult=@facult " +
+                               "u_name=@name, " +
+                               "u_patr=@patr, " +
+                               "kurs=@kurs, " +
+                               "spec=@spec, " +
+                               "facult=@facult, " +
                                "s_group=@group " +
-                               "room_num=@room_num" +
                                "WHERE u_serial=@serial AND u_number=@number";
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand(updateQuery);
+                NpgsqlCommand cmd = new NpgsqlCommand(updateQuery,conn);
                 cmd.Parameters.AddWithValue("@last_name", updatedStudent.lastName);
-                cmd.Parameters.AddWithValue("@u_name", updatedStudent.name);
+                cmd.Parameters.AddWithValue("@name", updatedStudent.name);
                 cmd.Parameters.AddWithValue("@kurs", updatedStudent.kurs);
                 cmd.Parameters.AddWithValue("@spec", updatedStudent.speciality);
                 cmd.Parameters.AddWithValue("@facult", updatedStudent.facult);
-                cmd.Parameters.AddWithValue("@s_group", updatedStudent.group);
-                cmd.Parameters.AddWithValue("@room_num", updatedStudent.roomNumber);
+                cmd.Parameters.AddWithValue("@group", updatedStudent.group);
+                cmd.Parameters.AddWithValue("@serial", updatedStudent.serial);
+                cmd.Parameters.AddWithValue("@number", updatedStudent.number);
                 if (updatedStudent.patronimic != null)
                 {
                     cmd.Parameters.AddWithValue("@patr", updatedStudent.patronimic);
@@ -686,27 +689,29 @@ namespace DormitoryProject.PGServer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка обновления записи в БД! Сообщение:" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка обновления записи в БД! Сообщение:" + ex.Message.Substring(6,ex.Message.Length-6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
         public void updateInfo(WorkerTicketDAL updatedWorker)
         {
-            string updateQuery = "UPDATE work_view " +
+            string updateQuery = "UPDATE workers " +
                                 "SET u_last_name=@last_name," +
-                                "u_name=@name " +
-                                "u_patr=@patr " +
-                                "spec=@spec " +
+                                "u_name=@name, " +
+                                "u_patr=@patr, " +
+                                "spec=@spec, " +
                                 "phone=@phone " +
                                 "WHERE u_serial=@serial AND u_number=@number";
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand(updateQuery);
+                NpgsqlCommand cmd = new NpgsqlCommand(updateQuery,conn);
                 cmd.Parameters.AddWithValue("@last_name", updatedWorker.lastName);
-                cmd.Parameters.AddWithValue("@u_name", updatedWorker.name);
+                cmd.Parameters.AddWithValue("@name", updatedWorker.name);
                 cmd.Parameters.AddWithValue("@spec", updatedWorker.spec);
                 cmd.Parameters.AddWithValue("@phone", updatedWorker.phoneNumber);
+                cmd.Parameters.AddWithValue("@serial", updatedWorker.serial);
+                cmd.Parameters.AddWithValue("@number", updatedWorker.number);
                 if (updatedWorker.patronimic != null)
                 {
                     cmd.Parameters.AddWithValue("@patr", updatedWorker.patronimic);
@@ -718,7 +723,7 @@ namespace DormitoryProject.PGServer
                 try
                 {
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Информация успешно обновлена:", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Информация успешно обновлена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -726,7 +731,37 @@ namespace DormitoryProject.PGServer
                 }
             }
         }
-        
+
+
+        public void addWorkDays(WorkerTicketDAL worker)
+        {
+            foreach(WorkDayDAL day in worker.workDays)
+            {
+                addWorkDay(worker.serial, worker.number, day);
+            }
+        }
+        public void deleteWorkDay(WorkerTicketDAL worker)
+        {
+            string deleteQuery = "DELETE FROM workdays WHERE u_serial=@serial AND u_number=@number AND work_day=@day";
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                NpgsqlCommand cmd = new NpgsqlCommand(deleteQuery, conn);
+                cmd.Parameters.AddWithValue("@day", worker.workDays[0].day);
+                cmd.Parameters.AddWithValue("@serial", worker.serial);
+                cmd.Parameters.AddWithValue("@number", worker.number);
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("День был успешно удален:", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка удаления записи в БД! Сообщение:" + ex.Message.Substring(6, ex.Message.Length - 6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+        }
 
         private static WorkerTicketDAL fromReaderToWorker(NpgsqlDataReader reader)
         {
@@ -735,17 +770,17 @@ namespace DormitoryProject.PGServer
             {
                 worker = new WorkerTicketDAL
                 {
-                    lastName = Convert.ToString(reader["u_last_name"]),
-                    name = Convert.ToString(reader["u_name"]),
-                    spec = Convert.ToString(reader["spec"]),
-                    phoneNumber = Convert.ToString(reader["phone"]),
-                    number = Convert.ToString(reader["u_number"]),
-                    serial = Convert.ToString(reader["u_serial"]),
+                    lastName = clearFromSpaces(Convert.ToString(reader["u_last_name"])),
+                    name = clearFromSpaces(Convert.ToString(reader["u_name"])),
+                    spec = clearFromSpaces(Convert.ToString(reader["spec"])),
+                    phoneNumber = clearFromSpaces(Convert.ToString(reader["phone"])),
+                    number = clearFromSpaces(Convert.ToString(reader["u_number"])),
+                    serial = clearFromSpaces(Convert.ToString(reader["u_serial"])),
                     workDays = new List<WorkDayDAL>()
                 };
                 if (reader["u_patr"] != DBNull.Value)
                 {
-                    worker.patronimic = Convert.ToString(reader["u_patr"]);
+                    worker.patronimic = clearFromSpaces(Convert.ToString(reader["u_patr"]));
                 }
             }
             return worker;
@@ -757,19 +792,19 @@ namespace DormitoryProject.PGServer
             {
                 stud = new StudentTicketDAL
                 {
-                    lastName = Convert.ToString(reader["u_last_name"]),
-                    name = Convert.ToString(reader["u_name"]),
+                    lastName = clearFromSpaces(Convert.ToString(reader["u_last_name"])),
+                    name = clearFromSpaces(Convert.ToString(reader["u_name"])),
                     kurs = Convert.ToInt32(reader["kurs"]),
-                    facult = Convert.ToString(reader["facult"]),
-                    speciality = Convert.ToString(reader["spec"]),
+                    facult = clearFromSpaces(Convert.ToString(reader["facult"])),
+                    speciality = clearFromSpaces(Convert.ToString(reader["spec"])),
                     group = Convert.ToInt32(reader["s_group"]),
-                    number = Convert.ToString(reader["u_number"]),
-                    serial = Convert.ToString(reader["u_serial"]),
+                    number = clearFromSpaces(Convert.ToString(reader["u_number"])),
+                    serial = clearFromSpaces(Convert.ToString(reader["u_serial"])),
                     roomNumber = Convert.ToInt32(reader["room_num"])
                 };
                 if (reader["u_patr"] != DBNull.Value)
                 {
-                    stud.patronimic = Convert.ToString(reader["u_patr"]);
+                    stud.patronimic = clearFromSpaces(Convert.ToString(reader["u_patr"]));
                 }
             }
 
@@ -815,7 +850,7 @@ namespace DormitoryProject.PGServer
             }
             return sb.ToString();
         }
-        private string clearFromSpaces(string s)
+        private static string clearFromSpaces(string s)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < s.Length; i++)

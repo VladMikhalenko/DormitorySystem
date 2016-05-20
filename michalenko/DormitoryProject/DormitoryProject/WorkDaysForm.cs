@@ -31,12 +31,17 @@ namespace DormitoryProject
             InitializeComponent();
             fillComboBoxes();
             getAllControls();
-            this.presenter = new WorkDaysFormPresenter(this,worker);
+            presenter = new WorkDaysFormPresenter(this,worker);
+            loadWorkerDays();
             lbWS.Text = "Время\nначала:";
             lbWE.Text = "Время\nокончания:";
             lbRS.Text = "Время\nначала:";
             lbRE.Text = "Время\nокончания:";
-            
+        }
+
+        public void loadWorkerDays()
+        {
+            presenter.loadDays();
         }
 
        

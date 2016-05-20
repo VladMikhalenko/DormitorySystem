@@ -65,6 +65,7 @@
             this.списокСтудентовToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.списокРаботниковToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnUpdate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.gbMenu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -160,6 +161,7 @@
             // 
             // gbMenu
             // 
+            this.gbMenu.Controls.Add(this.btnUpdate);
             this.gbMenu.Controls.Add(this.cbDays);
             this.gbMenu.Controls.Add(this.listBoxWD);
             this.gbMenu.Controls.Add(this.btnReload);
@@ -422,6 +424,16 @@
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
+            // btnUpdate
+            // 
+            this.btnUpdate.Location = new System.Drawing.Point(89, 228);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(75, 37);
+            this.btnUpdate.TabIndex = 24;
+            this.btnUpdate.Text = "Редакт. запись";
+            this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
+            // 
             // UserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -482,5 +494,6 @@
         private System.Windows.Forms.Button btnReload;
         private System.Windows.Forms.ListBox listBoxWD;
         private System.Windows.Forms.ComboBox cbDays;
+        private System.Windows.Forms.Button btnUpdate;
     }
 }

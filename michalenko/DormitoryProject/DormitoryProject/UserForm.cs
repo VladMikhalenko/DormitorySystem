@@ -24,6 +24,7 @@ namespace DormitoryProject
             InitializeComponent();
             DGV.ReadOnly = true;
             presenter = new UsersFormPresenter(this,role);
+            btnUpdate.Enabled = false;
             DGV.MultiSelect = false;
             hideWorkerControls();
             списокСтудентовToolStripMenuItem.Checked = true;
@@ -241,6 +242,7 @@ namespace DormitoryProject
 
         private void clear()
         {
+            btnUpdate.Enabled = false;
             foreach (Control c in this.Controls)
             {
                 if (c.GetType() == typeof(GroupBox))
@@ -272,6 +274,8 @@ namespace DormitoryProject
         private void CheckedChanged(object sender, EventArgs e)
         {
             cbDays.Visible = false;
+            clear();
+            btnUpdate.Enabled = false;
             RadioButton rb = (sender as RadioButton);
             gbMenu.Text = rb.Text;
             if(rb.Text=="Удалить")
@@ -299,6 +303,7 @@ namespace DormitoryProject
 
         private void DGV_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
+            btnUpdate.Enabled = true;
             for (int i = 0; i < DGV.ColumnCount; i++)
             {
                 tbList[i].Text = DGV.CurrentRow.Cells[i].Value.ToString();
@@ -353,5 +358,16 @@ namespace DormitoryProject
             this.Close();
         }
 
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            if(списокСтудентовToolStripMenuItem.Checked)
+            {
+                presenter.openUpdateStudentForm();
+            }
+            else if(списокРаботниковToolStripMenuItem.Checked)
+            {
+                presenter.openUpdateWorkerForm();
+            }
+        }
     }
 }

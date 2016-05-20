@@ -81,6 +81,7 @@
     <Compile Include="PGServer\PGUserRepository.cs" />
     <Compile Include="PGServer\PGUserRepositoryFactory.cs" />
     <Compile Include="Presenters\LoginPresenter.cs" />
+    <Compile Include="Presenters\StudentEditPresenter.cs" />
     <Compile Include="Presenters\UserRoomPresenter.cs" />
     <Compile Include="Presenters\UsersFormPresenter.cs" />
     <Compile Include="Presenters\WorkDaysFormPresenter.cs" />
@@ -89,6 +90,12 @@
     <Compile Include="DataAccessClasses\StudentTicketDAL.cs" />
     <Compile Include="ServicesBLL\UserService.cs" />
     <Compile Include="ServicesBLL\UserServiceFactory.cs" />
+    <Compile Include="StudentEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StudentEditForm.Designer.cs">
+      <DependentUpon>StudentEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,12 +108,20 @@
     <Compile Include="UserRoomForm.Designer.cs">
       <DependentUpon>UserRoomForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Validation\IValidable.cs" />
     <Compile Include="WorkDaysForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="WorkDaysForm.Designer.cs">
       <DependentUpon>WorkDaysForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="WorkerEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WorkerEditForm.Designer.cs">
+      <DependentUpon>WorkerEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WorkerEditPresenter.cs" />
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -119,6 +134,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="StudentEditForm.resx">
+      <DependentUpon>StudentEditForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserForm.resx">
       <DependentUpon>UserForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -127,6 +145,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="WorkDaysForm.resx">
       <DependentUpon>WorkDaysForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WorkerEditForm.resx">
+      <DependentUpon>WorkerEditForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -142,9 +163,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Validation\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

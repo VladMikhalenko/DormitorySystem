@@ -10,6 +10,7 @@ namespace DormitoryProject.InterfacesBLL
     public interface IUserService<TicketType> where TicketType:TicketBLL
     {
         IEnumerable<TicketType> searchBy(TicketType search);
+        TicketType searchBySerial(TicketType ticket);
         IEnumerable<StudentTicketBLL> getAllStudents();
         IEnumerable<WorkerTicketBLL> getAllWorkers();
         void addUser(TicketType user);

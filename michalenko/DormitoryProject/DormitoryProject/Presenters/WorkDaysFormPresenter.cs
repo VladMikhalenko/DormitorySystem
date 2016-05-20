@@ -14,6 +14,7 @@ namespace DormitoryProject.Presenters
         private WorkDaysForm form;
         private List<WorkDayBLL> week;
         private WorkerTicketBLL worker;
+
         public WorkDaysFormPresenter(WorkDaysForm form,WorkerTicketBLL worker)
         {
             this.form = form;
@@ -54,13 +55,53 @@ namespace DormitoryProject.Presenters
             }
         }
 
+        public void loadDays()
+        {
+            if(worker.workDays!=null)
+            {
+                int i = 0;
+                foreach (WorkDayBLL wd in week)
+                {
+                    if (wd.day.Text.Equals(worker.workDays[i].day))
+                    {
+                        wd.day.Enabled = false;
+                        wd.day.Checked = true;
+                        wd.disableCheckBoxes();
+                        wd.disableHours();
+                        wd.startTime.Text = worker.workDays[i].startTime;
+                        wd.endTime.Text = worker.workDays[i].endTime;
+                        if (worker.workDays[i].restStart != null)
+                        {
+                            wd.rest.Checked = true;
+                            wd.restStart.Text = worker.workDays[i].restStart;
+                            wd.restEnd.Text = worker.workDays[i].restEnd;
+                        }
+                        if(worker.workDays.Count-1-i==0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                        
+                    }
+                    else
+                    {
+                        wd.disableDay();
+                    }
+                }
+            }
+            
+        }
+
         public void setWorkDaysToWorker()
         {
             worker.workDays = new List<WorkDayDAL>();
             foreach(WorkDayBLL day in week)
             {
                 WorkDayDAL wdDAL = new WorkDayDAL();
-                if(day.day.Checked)
+                if(day.day.Checked && day.day.Enabled)
                 {
                     day.getWorkingTimeForWorkDayDAL(ref wdDAL);
                     if(day.rest.Checked)

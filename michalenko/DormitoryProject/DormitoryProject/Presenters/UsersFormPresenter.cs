@@ -308,5 +308,34 @@ namespace DormitoryProject.Presenters
             }
             return result;
         }
+
+        private void getDaysForWorkerFromList(ref WorkerTicketBLL worker)
+        {
+            foreach(WorkerTicketBLL w in userList)
+            {
+                if(w.serial.Equals(worker.serial) && w.number.Equals(worker.number))
+                {
+                    worker.workDays = w.workDays;
+                }
+            }
+        }
+
+        public void openUpdateStudentForm()
+        {
+            StudentEditForm edit = new StudentEditForm(getStudentFromTextBoxes());
+            edit.ShowDialog();
+            getListOfStudents();
+            reloadStudGrid();
+        }
+
+        public void openUpdateWorkerForm()
+        {
+            WorkerTicketBLL worker = getWorkerFromTextBoxes();
+            getDaysForWorkerFromList(ref worker);
+            WorkerEditForm edit = new WorkerEditForm(worker,roleToSend);
+            edit.ShowDialog();
+            getListOfWorkers();
+            reloadWorkerGrid();
+        }
     }
 }

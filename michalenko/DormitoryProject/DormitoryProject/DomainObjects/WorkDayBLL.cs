@@ -100,6 +100,30 @@ namespace DormitoryProject.DomainObjects
             disableRestTime();
         }
 
+        public void disableHours()
+        {
+            startTime.Enabled = false;
+            endTime.Enabled = false;
+            restStart.Enabled = false;
+            restEnd.Enabled = false;
+        }
+
+        public void enableHours()
+        {
+            startTime.Enabled = true;
+            endTime.Enabled = true;
+            restStart.Enabled = true;
+            restEnd.Enabled = true;
+        }
+
+        public void disableCheckBoxes()
+        {
+            day.Enabled = false;
+            day.Checked = true;
+            rest.Enabled = false;
+            rest.Checked = true;
+        }
+
         public void enableRestTime()
         {
             this.restStart.Enabled = true;

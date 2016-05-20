@@ -9,10 +9,11 @@ using DormitoryProject.ServicesBLL;
 using System.Windows.Forms;
 using Npgsql;
 using DormitoryProject.DomainObjects;
+using DormitoryProject.Validation;
 
 namespace DormitoryProject.Presenters
 {
-    public class LoginPresenter
+    public class LoginPresenter:IValidable
     {
         private string roleToSend=string.Empty;
         private LoginForm form; 
@@ -33,22 +34,7 @@ namespace DormitoryProject.Presenters
         public void checkLogin()
         {
             #region Проверки
-            if(string.IsNullOrWhiteSpace(form.getLogin()))
-            {
-                throw new ArgumentException("Логин не может быть пустым");
-            }
-            else
-            {
-                login = form.getLogin();
-            }
-            if (string.IsNullOrWhiteSpace(form.getPassword()))
-            {
-                throw new ArgumentException("Пароль не может быть пустым");
-            }
-            else
-            {
-                password = form.getPassword();
-            }
+            
             #endregion
 
             userType = login.Substring(0, 1);
@@ -94,6 +80,34 @@ namespace DormitoryProject.Presenters
                 ur.Show();
             }
 
+        }
+
+        public bool Validate()
+        {
+            //не доделал
+            string checkLogin = form.getLogin();
+            string checkPassword = form.getPassword();
+            bool ruleBroken = false;
+            List<string> brokenRules = new List<string>();
+            if (string.IsNullOrWhiteSpace(checkLogin))
+            {
+                brokenRules.Add("Поле логина не может быть пустым");
+                ruleBroken = true;
+            }
+            if (string.IsNullOrWhiteSpace(form.getPassword()))
+            {
+                brokenRules.Add("Поле пароля не может быть пустым");
+                ruleBroken = true;
+            }
+            if((checkLogin[0]>0 && checkLogin[0]<9) || (checkLogin[1] > 0 && checkLogin[1] < 9) || (checkLogin[2] > 0 && checkLogin[2] < 9))
+            {
+                brokenRules.Add("?????");
+            }
+            if(checkLogin.Length>9)
+            {
+                brokenRules.Add("Длина логина превышает допустимую длину");
+            }
+            return ruleBroken;
         }
     }
 }
