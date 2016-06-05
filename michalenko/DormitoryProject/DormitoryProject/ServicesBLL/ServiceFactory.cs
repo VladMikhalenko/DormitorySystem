@@ -8,17 +8,24 @@ using System.Threading.Tasks;
 
 namespace DormitoryProject.ServicesBLL
 {
-    public class UserServiceFactory : IServiceFactory
+    public class ServiceFactory : IServiceFactory
     {
-        private readonly PGUserRepositoryFactory repositoryFactory;
-        public UserServiceFactory(PGUserRepositoryFactory repositoryFactory)
+        private readonly PGRepositoryFactory repositoryFactory;
+
+        public ServiceFactory(PGRepositoryFactory repositoryFactory)
         {
             this.repositoryFactory = repositoryFactory;
         }
-        public IRoomService getRoomService()
+        public JournalService getJournalService()
         {
-            throw new NotImplementedException();
+            return new JournalService(repositoryFactory);
         }
+
+        public RoomService getRoomService()
+        {
+            return new RoomService(repositoryFactory);
+        }
+
 
         public UserService getUserService()
         {

@@ -2,6 +2,7 @@
 using DormitoryProject.DomainObjects;
 using DormitoryProject.PGServer;
 using DormitoryProject.ServicesBLL;
+using DormitoryProject.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +16,15 @@ namespace DormitoryProject
     {
         private WorkerEditForm form;
         private WorkerTicketBLL worker;
-        private UserServiceFactory serviceFactory;
+        private ServiceFactory serviceFactory;
         private UserService service;
-        public WorkerEditPresenter(WorkerEditForm form,WorkerTicketBLL worker,string role)
+        private FormValidator validator;
+        public WorkerEditPresenter(WorkerEditForm form,WorkerTicketBLL worker)
         {
             this.form = form;
             this.worker = worker;
-            serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory(role));
+            validator = new FormValidator();
+            serviceFactory = new ServiceFactory(new PGRepositoryFactory());
             service = serviceFactory.getUserService();
         }
 
@@ -44,8 +47,29 @@ namespace DormitoryProject
 
         public void updateInfo()
         {
-            WorkerTicketBLL worker = getWorkerFromTextBoxes();
-            service.updateData(worker);
+            validator.validateWorkerToAdd(getWorkerFromTextBoxes());
+            if(validator.isValid())
+            {
+                service.updateData(getWorkerFromTextBoxes());
+                form.Close();
+            }
+            else
+            {
+                MessageBox.Show(validator.getErrorString(),"Ошибки ввода",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+            }
+            validator.resetValues();
+        }
+
+        public void resetChanges()
+        {
+            List<TextBox> list = form.getTextBoxesValues();
+            list[0].Text = worker.lastName;
+            list[1].Text = worker.name;
+            list[2].Text = worker.patronimic;
+            list[3].Text = worker.speciality;
+            list[4].Text = worker.phoneNumber;
+            list[5].Text = worker.serial;
+            list[6].Text = worker.number;
         }
 
         public void loadWorkerToForm()
@@ -68,6 +92,22 @@ namespace DormitoryProject
                 }
             }
         }
+        
+        public void resetPassword()
+        {
+            DialogResult result = MessageBox.Show("Вы уверены, что хотите сбросить пароль для данного пользователя?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if(result==DialogResult.Yes)
+            {
+                if(worker.speciality.Equals("сантехник") ||worker.speciality.Equals("электрик"))
+                {
+                    service.ChangePassword("Р", worker.serial, worker.number, "----", "1234");
+                }
+                else
+                {
+                    service.ChangePassword("К", worker.serial, worker.number, "----", "1234");
+                }
+            }
+        }
 
         public void deleteDay()
         {
@@ -82,12 +122,9 @@ namespace DormitoryProject
             delWorker.workDays.Add(new WorkDayDAL { day = selectedDay });
             service.deleteWorkDay(delWorker);
             list.Items.Remove(selectedDay);
-                //IEnumerable<WorkerTicketBLL> updated= service.searchBy(worker);
-                //List<WorkerTicketBLL> updatedList = updated.ToList();
-            //worker = updatedList[0];
-            //loadWorkerToForm();
+            worker  = service.searchBySerial(worker);
+            loadWorkerToForm();
         }
-
 
         public void openWorkdaysForm()
         {

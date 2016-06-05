@@ -8,10 +8,11 @@ namespace DormitoryProject.DomainObjects
 {
     public class RoomBLL
     {
-        public int roomNum { get; set; }
-        public int roomStage { get; set; }
-        public int roomBlock { get; set; }
-        public int roomCapacity { get; set; }
-        public string roomState { get; set; }
+        public int number { get; set; }
+        public int stage { get; set; }
+        public int block { get; set; }
+        public int capacity { get; set; }
+        public string state { get; set; }
+        public int amountOfStudents { get; set; }
     }
 }

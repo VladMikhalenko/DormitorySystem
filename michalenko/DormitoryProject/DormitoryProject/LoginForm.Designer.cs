@@ -41,6 +41,7 @@
             this.tbLogin.Name = "tbLogin";
             this.tbLogin.Size = new System.Drawing.Size(100, 20);
             this.tbLogin.TabIndex = 0;
+            this.tbLogin.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.spaceEnterControl);
             // 
             // tbPwd
             // 
@@ -48,6 +49,7 @@
             this.tbPwd.Name = "tbPwd";
             this.tbPwd.Size = new System.Drawing.Size(100, 20);
             this.tbPwd.TabIndex = 1;
+            this.tbPwd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.spaceEnterControl);
             // 
             // btnApply
             // 
@@ -87,6 +89,9 @@
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.tbPwd);
             this.Controls.Add(this.tbLogin);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "LoginForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Добро пожаловать";

@@ -13,9 +13,16 @@ namespace DormitoryProject.PGServer
     public class PGRoomRepository:IRoomRepository
     {
         private readonly string connectionString;
-        public PGRoomRepository(string connection)
+        public PGRoomRepository()
         {
-            connectionString = connection;
+            if (LoginInfo.getConnectionString().Equals(null))
+            {
+                throw new ArgumentNullException(LoginInfo.getConnectionString());
+            }
+            else 
+            {
+                connectionString=LoginInfo.getConnectionString();
+            }
         }
 
         public IEnumerable<RoomDAL> findByCapacity(int number)
@@ -47,74 +54,20 @@ namespace DormitoryProject.PGServer
         {
             var room = new RoomDAL
             {
-                roomNum = Convert.ToInt32(reader["room_num"]),
-                roomBlock=Convert.ToInt32(reader["room_block"]),
-                roomStage=Convert.ToInt32(reader["room_stage"]),
-                roomCapacity=Convert.ToInt32(reader["room_capacity"]),
-                roomState=Convert.ToString(reader["room_state"])
+                number = Convert.ToInt32(reader["room_num"]),
+                block=Convert.ToInt32(reader["room_block"]),
+                stage=Convert.ToInt32(reader["room_stage"]),
+                capacity=Convert.ToInt32(reader["room_capacity"]),
+                state=clearFromSpaces(Convert.ToString(reader["room_state"])),
+                amountOfStudents=Convert.ToInt32(reader["count"])
             };
             return room;
         }
-
-        public RoomDAL findByNum(int number)
-        {
-            string searchQuery = "SELECT room_num,room_stage,room_block,room_capacity,room_state FROM room " +
-                                 "WHERE room_num=@room_num";
-            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
-            {
-                conn.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand(searchQuery, conn);
-                using (NpgsqlDataReader reader = cmd.ExecuteReader())
-                {
-                    return fromReaderToRoom(reader);
-                }
-            }
-        }
-
-        public IEnumerable<RoomDAL> findByState(string state)
-        {
-            List<RoomDAL> list = new List<RoomDAL>();
-            string searchQuery = "SELECT room_num,room_stage,room_block,room_capacity,room_state " +
-                                "FROM room WHERE room_state=@state";
-            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
-            {
-                conn.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand(searchQuery, conn);
-                cmd.Parameters.AddWithValue("@state", state);
-                using (NpgsqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        list.Add(fromReaderToRoom(reader));
-                    }
-                }
-            }
-            return list.AsEnumerable();
-        }
-
-        
-        public RoomDAL findStudent(StudentTicketDAL student)
-        {
-            string searchQuery = "SELECT room_num,room_stage,room_block,room_capacity,room_state FROM room"+
-                                 "WHERE room_num=(SELECT room_num FROM accomodation "+
-                                 "WHERE u_serial=@serial AND u_number=@number)";
-            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
-            {
-                conn.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand(searchQuery, conn);
-                cmd.Parameters.AddWithValue("@serial", student.serial);
-                cmd.Parameters.AddWithValue("@number", student.number);
-                using (NpgsqlDataReader reader = cmd.ExecuteReader())
-                {
-                    return fromReaderToRoom(reader);
-                }
-            }
-        }
-
+       
         public IEnumerable<RoomDAL> getAllRooms()
         {
             List<RoomDAL> list = new List<RoomDAL>();
-            string searchQuery = "SELECT room_num,room_stage,room_block,room_capacity,room_state FROM room";
+            string searchQuery = "SELECT * FROM rooms_with_accomodation";
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
@@ -130,26 +83,106 @@ namespace DormitoryProject.PGServer
             return list.AsEnumerable();
         }
 
-        public bool updateState(RoomDAL updatedRoom)
+        public void updateState(RoomDAL updatedRoom)
         {
             string query = "UPDATE room "+
-                           "room_state=@state "+
+                           "SET room_state=@state "+
                            "WHERE room_num=@num";
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
                 NpgsqlCommand cmd = new NpgsqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@state", updatedRoom.roomState);
+                cmd.Parameters.AddWithValue("@state", updatedRoom.state);
+                cmd.Parameters.AddWithValue("@num", updatedRoom.number);
                 try
                 {
                     cmd.ExecuteNonQuery();
+                    MessageBox.Show("Запись успешно обновлена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch(Exception ex)
                 {
                     MessageBox.Show("Ошибка обновления записи в БД! Сообщение:" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                return true;
             }
+        }
+
+        public IEnumerable<RoomDAL> getAvailableForAccomodation()
+        {
+            string query = "SELECT * FROM rooms_with_accomodation WHERE room_state<>'нежилое' AND count<room_capacity";
+            List<RoomDAL> list = new List<RoomDAL>();
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                NpgsqlCommand cmd = new NpgsqlCommand(query, conn);
+                using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(fromReaderToRoom(reader));
+                    }
+                }
+            }
+            return list.AsEnumerable();
+        }
+
+        public IEnumerable<RoomDAL> findByState(string state)
+        {
+            string query = "SELECT * FROM rooms_with_accomodation WHERE room_state<>'нежилое' AND count<room_capacity";
+            List<RoomDAL> list = new List<RoomDAL>();
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                NpgsqlCommand cmd = new NpgsqlCommand(query, conn);
+                using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(fromReaderToRoom(reader));
+                    }
+                }
+            }
+            return list.AsEnumerable();
+        }
+
+        public IEnumerable<RoomDAL> getNotAvailableForAccomodation()
+        {
+            string query = "SELECT * FROM rooms_with_accomodation WHERE room_state='нежилое'";
+            List<RoomDAL> list = new List<RoomDAL>();
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                NpgsqlCommand cmd = new NpgsqlCommand(query, conn);
+                using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(fromReaderToRoom(reader));
+                    }
+                }
+            }
+            return list.AsEnumerable();
+        }
+        private static string clearFromSpaces(string s)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] != ' ')
+                {
+                    sb.Append(s[i]);
+                }
+                else if (s[i] == ' ')
+                {
+                    if (i + 1 < s.Length)
+                    {
+                        if (s[i + 1] != ' ')
+                        {
+                            sb.Append(s[i]);
+                        }
+                    }
+                }
+            }
+            return sb.ToString();
         }
     }
 }

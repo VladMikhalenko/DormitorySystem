@@ -1,5 +1,6 @@
 ﻿using DormitoryProject.DataAccessClasses;
 using DormitoryProject.DomainObjects;
+using DormitoryProject.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,13 @@ namespace DormitoryProject.Presenters
         private WorkDaysForm form;
         private List<WorkDayBLL> week;
         private WorkerTicketBLL worker;
+        private FormValidator validator;
 
         public WorkDaysFormPresenter(WorkDaysForm form,WorkerTicketBLL worker)
         {
             this.form = form;
             this.worker = worker;
+            validator = new FormValidator();
             initWeek();
             disableDays();
         }
@@ -57,9 +60,9 @@ namespace DormitoryProject.Presenters
 
         public void loadDays()
         {
-            if(worker.workDays!=null)
+            int i = 0;
+            if(worker.workDays!=null && worker.workDays.Count>0)
             {
-                int i = 0;
                 foreach (WorkDayBLL wd in week)
                 {
                     if (wd.day.Text.Equals(worker.workDays[i].day))
@@ -76,7 +79,7 @@ namespace DormitoryProject.Presenters
                             wd.restStart.Text = worker.workDays[i].restStart;
                             wd.restEnd.Text = worker.workDays[i].restEnd;
                         }
-                        if(worker.workDays.Count-1-i==0)
+                        if (worker.workDays.Count - 1 - i == 0)
                         {
                             break;
                         }
@@ -84,19 +87,20 @@ namespace DormitoryProject.Presenters
                         {
                             i++;
                         }
-                        
                     }
                     else
                     {
                         wd.disableDay();
                     }
                 }
+                
             }
             
         }
 
-        public void setWorkDaysToWorker()
+        public bool setWorkDaysToWorker()
         {
+            validator.resetValues();
             worker.workDays = new List<WorkDayDAL>();
             foreach(WorkDayBLL day in week)
             {
@@ -108,9 +112,18 @@ namespace DormitoryProject.Presenters
                     {
                         day.getRestTimeForWorkDAL(ref wdDAL);
                     }
-                    worker.workDays.Add(wdDAL);
+                    validator.validateWorkDay(wdDAL);
+                    if(validator.isValid())
+                    {
+                        worker.workDays.Add(wdDAL);
+                    }
                 }
             }
+            if(validator.getCountOfBrokenRules()>0)
+            {
+                MessageBox.Show(validator.getErrorString(), "Ошибки ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            return validator.isValid();
         }
 
         public void dayCheckChanged(CheckBox box)

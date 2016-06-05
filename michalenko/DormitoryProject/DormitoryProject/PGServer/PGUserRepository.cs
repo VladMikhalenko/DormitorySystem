@@ -14,41 +14,15 @@ namespace DormitoryProject.PGServer
     {
         private readonly string connectionString = string.Empty;
 
-        private readonly string STUD_ROLE = "student";
-        private readonly string WORKER_ROLE = "worker";
-        private readonly string KOMENDANT_ROLE = "komendant";
-        private readonly string POSTGRES_ROLE = "postgres";
-
-        private readonly string STUD_PWD = "0000";
-        private readonly string WORKER_PWD = "0000";
-        private readonly string KOMENDANT_PWD = "0000";
-        private readonly string POSTGRES_PWD = "0000";
-
-        public PGUserRepository(string role)
+        public PGUserRepository()
         {
-            if(role==null)
+            if(LoginInfo.getConnectionString().Equals(null))
             {
-                throw new ArgumentNullException(role);
-            }
-            if(role.Equals(STUD_ROLE))
-            {
-                connectionString = buildConnectionString(role,STUD_PWD);
-            }
-            else if (role.Equals(WORKER_ROLE))
-            {
-                connectionString = buildConnectionString(role, WORKER_PWD);
-            }
-            else if (role.Equals(KOMENDANT_ROLE))
-            {
-                connectionString = buildConnectionString(role, KOMENDANT_PWD);
-            }
-            else if (role.Equals(STUD_ROLE))
-            {
-                connectionString = buildConnectionString(role, POSTGRES_PWD);
+                throw new ArgumentNullException(LoginInfo.getConnectionString());
             }
             else
             {
-                throw new ArgumentException("Неизвестная роль({0})!", role);
+                connectionString = LoginInfo.getConnectionString();
             }
         }
 
@@ -155,14 +129,57 @@ namespace DormitoryProject.PGServer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка добавления записи в БД! Сообщение:" + ex.Message.Substring(6,ex.Message.Length-6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ошибка добавления записи в БД! Сообщение:\n" + ex.Message.Substring(6,ex.Message.Length-6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        private string buildConnectionString(string role,string password)
+        public void changePassword(string userType,string serial,string number,string old_pwd,string new_pwd)
         {
-            return string.Format("Server = 127.0.0.1; Port=5432;User Id = {0}; Password={1};Database=dormitory;", role,password);
+            string query = "SELECT change_password(@userType,@serial,@number,@old,@new)";
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                NpgsqlCommand cmd = new NpgsqlCommand(query, conn);
+                if(userType==null)
+                {
+                    if (LoginInfo.isWorker())
+                    {
+                        cmd.Parameters.AddWithValue("@userType", "Р");
+                    }
+                    else if (LoginInfo.isStudent())
+                    {
+                        cmd.Parameters.AddWithValue("@userType", "С");
+                    }
+                    else if (LoginInfo.isKomendant())
+                    {
+                        cmd.Parameters.AddWithValue("@userType", "К");
+                    }
+                }
+                else
+                {
+                     cmd.Parameters.AddWithValue("@userType", userType);
+                }
+                
+                
+                #region Определяем от кого имени меняем
+                
+                #endregion
+                cmd.Parameters.AddWithValue("@serial", serial);
+                cmd.Parameters.AddWithValue("@number", number);
+                cmd.Parameters.AddWithValue("@old", old_pwd);
+                cmd.Parameters.AddWithValue("@new", new_pwd);
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Пароль успешно изменен, ваш новый пароль " + new_pwd, "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Ошибка изменения пароля!\n" + ex.Message.Substring(6, ex.Message.Length - 6), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
         }
 
         public bool checkUser(string userType, string serial, string number, string password)
@@ -188,11 +205,6 @@ namespace DormitoryProject.PGServer
                     return false;
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            
         }
 
         public WorkerTicketDAL findBySerial(WorkerTicketDAL worker)
@@ -341,14 +353,13 @@ namespace DormitoryProject.PGServer
         public IEnumerable<StudentTicketDAL> searchBy(StudentTicketDAL student)
         {
             List<StudentTicketDAL> list = new List<StudentTicketDAL>();
-            string getQuery = "SELECT u_serial,u_number,u_last_name,u_name,u_patr, kurs,facult,spec,s_group,room_num FROM stud_view " +
-                              "WHERE ";
+            string getQuery = "SELECT u_serial,u_number,u_last_name,u_name,u_patr, kurs,facult,spec,s_group,room_num FROM stud_view ";
             //дополнить поиск по вхождению подстрок SIMILAR TO
             bool hasPrev = false;
             #region LastName
             if (!string.IsNullOrWhiteSpace(student.lastName))
             {
-                getQuery += " u_last_name='" + student.lastName.ToString() + "' ";
+                getQuery += "WHERE u_last_name SIMILAR TO '%" + student.lastName.ToString() + "%' ";
                 hasPrev = true;
             }
             #endregion
@@ -358,11 +369,11 @@ namespace DormitoryProject.PGServer
                 if (hasPrev)
                 {
                     getQuery += " AND ";
-                    getQuery += " u_name='" + student.name.ToString() + "'";
+                    getQuery += " u_name SIMILAR TO'%" + student.name.ToString() + "%'";
                 }
                 else
                 {
-                    getQuery += " u_name='" + student.name.ToString() + "'";
+                    getQuery += "WHERE u_name SIMILAR TO '%" + student.name.ToString() + "%'";
                 }
                 hasPrev = true;
             }
@@ -373,11 +384,11 @@ namespace DormitoryProject.PGServer
                 if (hasPrev)
                 {
                     getQuery += " AND ";
-                    getQuery += " u_patr='" + student.patronimic.ToString() + "' ";
+                    getQuery += " u_patr SIMILAR TO '%" + student.patronimic.ToString() + "%' ";
                 }
                 else
                 {
-                    getQuery += " u_patr='" + student.patronimic.ToString() + "' ";
+                    getQuery += "WHERE u_patr='%" + student.patronimic.ToString() + "%' ";
                 }
                 hasPrev = true;
             }
@@ -388,11 +399,11 @@ namespace DormitoryProject.PGServer
                 if (hasPrev)
                 {
                     getQuery += " AND ";
-                    getQuery += " facult='" + student.facult.ToString() + "' ";
+                    getQuery += " facult SIMILAR TO '%" + student.facult.ToString() + "%' ";
                 }
                 else
                 {
-                    getQuery += " facult='" + student.facult.ToString() + "' ";
+                    getQuery += "WHERE facult SIMILAR TO '%" + student.facult.ToString() + "%' ";
                 }
                 hasPrev = true;
             }
@@ -407,7 +418,7 @@ namespace DormitoryProject.PGServer
                 }
                 else
                 {
-                    getQuery += " kurs='" + student.kurs + "' ";
+                    getQuery += "WHERE kurs='" + student.kurs + "' ";
                 }
                 hasPrev = true;
             }
@@ -418,11 +429,11 @@ namespace DormitoryProject.PGServer
                 if (hasPrev)
                 {
                     getQuery += " AND ";
-                    getQuery += " spec='" + student.speciality + "' ";
+                    getQuery += " spec SIMILAR TO '%" + student.speciality + "%' ";
                 }
                 else
                 {
-                    getQuery += " spec='" + student.speciality + "' ";
+                    getQuery += "WHERE spec SIMILAR TO '%" + student.speciality + "%' ";
                 }
                 hasPrev = true;
             }
@@ -437,7 +448,7 @@ namespace DormitoryProject.PGServer
                 }
                 else
                 {
-                    getQuery += " s_group='" + student.group + "' ";
+                    getQuery += "WHERE s_group='" + student.group + "' ";
                 }
                 hasPrev = true;
             }
@@ -452,7 +463,7 @@ namespace DormitoryProject.PGServer
                 }
                 else
                 {
-                    getQuery += " u_serial='" + student.serial + "' ";
+                    getQuery += "WHERE u_serial='" + student.serial + "' ";
                 }
                 hasPrev = true;
             }
@@ -467,7 +478,7 @@ namespace DormitoryProject.PGServer
                 }
                 else
                 {
-                    getQuery += " u_number='" + student.number + "' ";
+                    getQuery += "WHERE u_number='" + student.number + "' ";
                 }
                 hasPrev = true;
             }
@@ -482,7 +493,7 @@ namespace DormitoryProject.PGServer
                 }
                 else
                 {
-                    getQuery += " room_num=" + student.roomNumber + " ";
+                    getQuery += "WHERE room_num=" + student.roomNumber + " ";
                 }
                 hasPrev = true;
             }
@@ -511,7 +522,7 @@ namespace DormitoryProject.PGServer
             #region LastName
             if (!string.IsNullOrWhiteSpace(worker.lastName))
             {
-                getQuery += "WHERE u_last_name='" + worker.lastName.ToString() + "' ";
+                getQuery += "WHERE u_last_name SIMILAR TO '%" + worker.lastName.ToString() + "%' ";
                 hasPrev = true;
             }
             #endregion
@@ -521,11 +532,11 @@ namespace DormitoryProject.PGServer
                 if (hasPrev)
                 {
                     getQuery += " AND ";
-                    getQuery += " u_name='" + worker.name.ToString() + "'";
+                    getQuery += " u_name SIMILAR TO '%" + worker.name.ToString() + "%'";
                 }
                 else
                 {
-                    getQuery += "WHERE u_name='" + worker.name.ToString() + "'";
+                    getQuery += "WHERE u_name SIMILAR TO '%" + worker.name.ToString() + "%'";
                 }
                 hasPrev = true;
             }
@@ -536,11 +547,11 @@ namespace DormitoryProject.PGServer
                 if (hasPrev)
                 {
                     getQuery += " AND ";
-                    getQuery += " u_patr='" + worker.patronimic.ToString() + "' ";
+                    getQuery += " u_patr SIMILAR TO '%" + worker.patronimic.ToString() + "%' ";
                 }
                 else
                 {
-                    getQuery += "WHERE u_patr='" + worker.patronimic.ToString() + "' ";
+                    getQuery += "WHERE u_patr SIMILAR TO '%" + worker.patronimic.ToString() + "%' ";
                 }
                 hasPrev = true;
             }
@@ -551,11 +562,11 @@ namespace DormitoryProject.PGServer
                 if (hasPrev)
                 {
                     getQuery += " AND ";
-                    getQuery += " spec='" + worker.spec.ToString() + "' ";
+                    getQuery += " spec SIMILAR TO '%" + worker.spec.ToString() + "%' ";
                 }
                 else
                 {
-                    getQuery += "WHERE spec='" + worker.spec.ToString() + "' ";
+                    getQuery += "WHERE spec SIMILAR TO '%" + worker.spec.ToString() + "%' ";
                 }
                 hasPrev = true;
             }
@@ -566,11 +577,11 @@ namespace DormitoryProject.PGServer
                 if (hasPrev)
                 {
                     getQuery += " AND ";
-                    getQuery += " phone='" + worker.phoneNumber + "' ";
+                    getQuery += @" phone SIMILAR TO '%" + worker.phoneNumber + "%' ";
                 }
                 else
                 {
-                    getQuery += "WHERE phone='" + worker.phoneNumber + "' ";
+                    getQuery += @"WHERE phone SIMILAR TO '%" + worker.phoneNumber + "%' ";
                 }
                 hasPrev = true;
             }
@@ -753,7 +764,7 @@ namespace DormitoryProject.PGServer
                 try
                 {
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("День был успешно удален:", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("День был успешно удален", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -853,11 +864,21 @@ namespace DormitoryProject.PGServer
         private static string clearFromSpaces(string s)
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < s.Length; i++)
+            for (int i = 0; i <s.Length; i++)
             {
-                if (s[i] != ' ')
+                if(s[i]!=' ')
                 {
                     sb.Append(s[i]);
+                }
+                else if(s[i]==' ')
+                {
+                    if(i+1<s.Length)
+                    {
+                        if(s[i+1]!=' ')
+                        {
+                            sb.Append(s[i]);
+                        }
+                    }
                 }
             }
             return sb.ToString();

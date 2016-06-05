@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DormitoryProject.Interfaces
 {
-    public interface IUserRepository<TicketType>:IDisposable where TicketType:TicketDAL
+    public interface IUserRepository<TicketType> where TicketType:TicketDAL
     {
         TicketType findBySerial(TicketType ticket);
         void removeBySerial(TicketType ticket);

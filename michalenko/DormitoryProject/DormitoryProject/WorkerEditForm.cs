@@ -16,13 +16,19 @@ namespace DormitoryProject
         private WorkerEditPresenter presenter;
         private List<TextBox> tbList = new List<TextBox>();
         
-        public WorkerEditForm(WorkerTicketBLL worker,string role)
+        public WorkerEditForm(WorkerTicketBLL worker)
         {
             InitializeComponent();
             getTextBoxes();
-            presenter = new WorkerEditPresenter(this, worker,role);
+            presenter = new WorkerEditPresenter(this, worker);
             loadWorker();
+            setLimits();
             btnDelete.Enabled = false;
+            tbSpec.Enabled = false;
+            if(LoginInfo.isWorker())
+            {
+                btnPwd.Visible = false;
+            }
         }
 
         private void getTextBoxes()
@@ -34,6 +40,17 @@ namespace DormitoryProject
             tbList.Add(tbPhone);
             tbList.Add(tbSerial);
             tbList.Add(tbNumber);
+        }
+
+        private void setLimits()
+        {
+            tbLastName.MaxLength = 20;
+            tbName.MaxLength = 20;
+            tbPatr.MaxLength = 20;
+            tbSerial.MaxLength = 2;
+            tbNumber.MaxLength = 6;
+            tbSpec.MaxLength =9;
+            tbPhone.MaxLength = 16;
         }
 
         public ListBox getWorkDayList()
@@ -54,19 +71,12 @@ namespace DormitoryProject
         private void btnConfirm_Click(object sender, EventArgs e)
         {
             presenter.updateInfo();
-            this.Close();
-        }
-
-        private void btnUpdateTime_Click(object sender, EventArgs e)
-        {
-            presenter.openWorkdaysForm();
         }
 
         private void btnAddDays_Click(object sender, EventArgs e)
         {
             presenter.openWorkdaysForm();
         }
-
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
@@ -80,6 +90,16 @@ namespace DormitoryProject
         private void listBoxDays_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnDelete.Enabled = true;
+        }
+
+        private void btnPwd_Click(object sender, EventArgs e)
+        {
+            presenter.resetPassword();
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            presenter.resetChanges();
         }
     }
 }

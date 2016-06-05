@@ -13,101 +13,47 @@ using DormitoryProject.Validation;
 
 namespace DormitoryProject.Presenters
 {
-    public class LoginPresenter:IValidable
+    public class LoginPresenter
     {
-        private string roleToSend=string.Empty;
         private LoginForm form; 
-        private IServiceFactory serviceFactory;
+        private ServiceFactory serviceFactory;
         private UserService service;
-
-        private string login;
-        private string password;
-        private string userType;
-        private string serial;
-        private string number;
+        private FormValidator validator;
+        
 
         
         public LoginPresenter(LoginForm logform)
         {
             form = logform;
+            validator = new FormValidator();
         }        
         public void checkLogin()
         {
             #region Проверки
-            
+            validator.validateLogin(form.getLogin());
+            validator.validateNewPassword(form.getPassword());
+            if(validator.isValid())
+            {
+                string type = form.getLogin().Substring(0, 1);
+                string serial = form.getLogin().Substring(1, 2);
+                string number = form.getLogin().Substring(3, 6);
+                LoginInfo.setRoleFromLogin(form.getLogin());
+                serviceFactory = new ServiceFactory(new PGRepositoryFactory());
+                service = serviceFactory.getUserService();
+
+                if (service.Authentication(type, serial, number, form.getPassword()))
+                {
+                    UserRoomForm ur = new UserRoomForm(form, form.getLogin());
+                    form.Hide();
+                    ur.Show();
+                }
+            }
+            else
+            {
+                MessageBox.Show(validator.getErrorString(), "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            validator.resetValues();
             #endregion
-
-            userType = login.Substring(0, 1);
-            serial = login.Substring(1, 2);
-            number = login.Substring(3, login.Length-3);
-            bool res = false;
-            if(userType=="С")
-            {
-                serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory("student"));
-                service = serviceFactory.getUserService();
-            }
-            else if(userType=="Р")
-            {
-                serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory("worker"));
-                service = serviceFactory.getUserService();
-            }
-            else if (userType == "К")
-            {
-                serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory("komendant"));
-                service = serviceFactory.getUserService();
-            }
-            //валидация ввода логина и пароля
-            res = service.Authentication(userType, serial, number, password);
-
-            if (res)
-            {
-                #region подготовка roleToSend для передачи в следующую форму
-                if (userType.Equals("С"))
-                {
-                    roleToSend = "student";
-                }
-                else if(userType.Equals("Р"))
-                {
-                    roleToSend = "worker";
-                }
-                else if(userType.Equals("К"))
-                {
-                    roleToSend = "komendant";
-                }
-                #endregion
-                UserRoomForm ur = new UserRoomForm(form,login,roleToSend);
-                form.Hide();
-                ur.Show();
-            }
-
-        }
-
-        public bool Validate()
-        {
-            //не доделал
-            string checkLogin = form.getLogin();
-            string checkPassword = form.getPassword();
-            bool ruleBroken = false;
-            List<string> brokenRules = new List<string>();
-            if (string.IsNullOrWhiteSpace(checkLogin))
-            {
-                brokenRules.Add("Поле логина не может быть пустым");
-                ruleBroken = true;
-            }
-            if (string.IsNullOrWhiteSpace(form.getPassword()))
-            {
-                brokenRules.Add("Поле пароля не может быть пустым");
-                ruleBroken = true;
-            }
-            if((checkLogin[0]>0 && checkLogin[0]<9) || (checkLogin[1] > 0 && checkLogin[1] < 9) || (checkLogin[2] > 0 && checkLogin[2] < 9))
-            {
-                brokenRules.Add("?????");
-            }
-            if(checkLogin.Length>9)
-            {
-                brokenRules.Add("Длина логина превышает допустимую длину");
-            }
-            return ruleBroken;
         }
     }
 }

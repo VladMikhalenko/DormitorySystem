@@ -13,9 +13,9 @@ namespace DormitoryProject.ServicesBLL
 {
     public class UserService : IUserService<StudentTicketBLL>, IUserService<WorkerTicketBLL>
     {
-        private readonly PGUserRepositoryFactory repositoryFactory;
+        private readonly PGRepositoryFactory repositoryFactory;
 
-        public UserService(PGUserRepositoryFactory repositoryFactory)
+        public UserService(PGRepositoryFactory repositoryFactory)
         {
             this.repositoryFactory = repositoryFactory;
         }
@@ -35,10 +35,8 @@ namespace DormitoryProject.ServicesBLL
                 speciality = student.speciality,
                 roomNumber = student.roomNumber
             };
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                repository.addUser(studDAL);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            repository.addUser(studDAL);
         }
 
         public void addUser(WorkerTicketBLL worker)
@@ -57,120 +55,106 @@ namespace DormitoryProject.ServicesBLL
             {
                 wDAL.workDays = worker.workDays;
             }
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                repository.addUser(wDAL);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            repository.addUser(wDAL);
         }
 
         public bool Authentication(string userType, string serial, string number, string password)
         {
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                return repository.checkUser(userType, serial, number, password);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            return repository.checkUser(userType, serial, number, password);
         }
 
         public void deleteUser(StudentTicketBLL student)
         {
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            StudentTicketDAL studentDAL = new StudentTicketDAL
             {
-                StudentTicketDAL studentDAL = new StudentTicketDAL
-                {
-                    serial=student.serial,
-                    number=student.number,
-                    lastName=student.lastName,
-                    name=student.name,
-                    patronimic=student.patronimic,
-                    kurs=student.kurs,
-                    speciality=student.speciality,
-                    facult=student.facult,
-                    group=student.group,
-                    roomNumber=student.roomNumber
-                };
-                repository.removeBySerial(studentDAL);
-            }
+                serial =student.serial,
+                number=student.number,
+                lastName=student.lastName,
+                name=student.name,
+                patronimic=student.patronimic,
+                kurs=student.kurs,
+                speciality=student.speciality,
+                facult=student.facult,
+                group=student.group,
+                roomNumber=student.roomNumber
+            };
+            repository.removeBySerial(studentDAL);
         }
 
         public void deleteUser(WorkerTicketBLL worker)
         {
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            WorkerTicketDAL workerDAL = new WorkerTicketDAL
             {
-                WorkerTicketDAL workerDAL = new WorkerTicketDAL
-                {
-                    serial = worker.serial,
-                    number = worker.number,
-                    lastName = worker.lastName,
-                    name = worker.name,
-                    patronimic = worker.patronimic,
-                    phoneNumber = worker.phoneNumber,
-                    spec = worker.speciality,
-                    workDays = worker.workDays
-                };
-                repository.removeBySerial(workerDAL);
-            }
+                serial = worker.serial,
+                number = worker.number,
+                lastName = worker.lastName,
+                name = worker.name,
+                patronimic = worker.patronimic,
+                phoneNumber = worker.phoneNumber,
+                spec = worker.speciality,
+                workDays = worker.workDays
+            };
+            repository.removeBySerial(workerDAL);
         }
 
         public IEnumerable<StudentTicketBLL> getAllStudents()
         {
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            IEnumerable<StudentTicketDAL> list = (repository.getAllStudents() as List<StudentTicketDAL>);
+            return list.Select(s => new StudentTicketBLL
             {
-                IEnumerable<StudentTicketDAL> list = (repository.getAllStudents() as List<StudentTicketDAL>);
-                return list.Select(s => new StudentTicketBLL
-                {
-                    lastName = s.lastName,
-                    name = s.name,
-                    patronimic = s.patronimic,
-                    number = s.number,
-                    serial = s.serial,
-                    kurs = s.kurs,
-                    facult = s.facult,
-                    group = s.group,
-                    speciality = s.speciality,
-                    roomNumber = s.roomNumber
-                }).AsEnumerable();
-            }
+                lastName = s.lastName,
+                name = s.name,
+                patronimic = s.patronimic,
+                number = s.number,
+                serial = s.serial,
+                kurs = s.kurs,
+                facult = s.facult,
+                group = s.group,
+                speciality = s.speciality,
+                roomNumber = s.roomNumber
+            }).AsEnumerable();
         }
 
         public IEnumerable<WorkerTicketBLL> getAllWorkers()
         {
-            using(PGUserRepository repository = repositoryFactory.getUserRepository())
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            IEnumerable<WorkerTicketDAL> list = (repository.getAllWorkers() as List<WorkerTicketDAL>);
+            return list.Select(w => new WorkerTicketBLL
             {
-                IEnumerable<WorkerTicketDAL> list = (repository.getAllWorkers() as List<WorkerTicketDAL>);
-                return list.Select(w => new WorkerTicketBLL
-                {
-                    lastName = w.lastName,
-                    name = w.name,
-                    patronimic = w.patronimic,
-                    number = w.number,
-                    serial = w.serial,
-                    phoneNumber = w.phoneNumber,
-                    speciality = w.spec,
-                    workDays = w.workDays
-                }).AsEnumerable();
-            }
+                lastName = w.lastName,
+                name = w.name,
+                patronimic = w.patronimic,
+                number = w.number,
+                serial = w.serial,
+                phoneNumber = w.phoneNumber,
+                speciality = w.spec,
+                workDays = w.workDays
+            }).AsEnumerable();
         }
 
         public void resettleStudent(StudentTicketBLL student)
         {
 
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            StudentTicketDAL studentDAL = new StudentTicketDAL
             {
-                StudentTicketDAL studentDAL = new StudentTicketDAL
-                {
-                    serial = student.serial,
-                    number = student.number,
-                    lastName = student.lastName,
-                    name = student.name,
-                    patronimic = student.patronimic,
-                    kurs = student.kurs,
-                    speciality = student.speciality,
-                    facult = student.facult,
-                    group = student.group,
-                    roomNumber = student.roomNumber
-                };
-                repository.resettleStudent(studentDAL);
-            }
+                serial = student.serial,
+                number = student.number,
+                lastName = student.lastName,
+                name = student.name,
+                patronimic = student.patronimic,
+                kurs = student.kurs,
+                speciality = student.speciality,
+                facult = student.facult,
+                group = student.group,
+                roomNumber = student.roomNumber
+            };
+            repository.resettleStudent(studentDAL);
         }
 
         public IEnumerable<StudentTicketBLL> searchBy(StudentTicketBLL student)
@@ -189,10 +173,8 @@ namespace DormitoryProject.ServicesBLL
                 speciality = student.speciality,
                 roomNumber = student.roomNumber
             };
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                listDal = (repository.searchBy(searchPattern) as IEnumerable<StudentTicketDAL>);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            listDal = (repository.searchBy(searchPattern) as IEnumerable<StudentTicketDAL>);
             return listDal.Select(s => new StudentTicketBLL
             {
                 lastName = s.lastName,
@@ -222,10 +204,8 @@ namespace DormitoryProject.ServicesBLL
                 spec = worker.speciality,
                 workDays = worker.workDays
             };
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                listDAL = (repository.searchBy(searchPattern) as IEnumerable<WorkerTicketDAL>);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            listDAL = (repository.searchBy(searchPattern) as IEnumerable<WorkerTicketDAL>);
             return listDAL.Select(w => new WorkerTicketBLL
             {
                 lastName = w.lastName,
@@ -253,10 +233,8 @@ namespace DormitoryProject.ServicesBLL
                 speciality = updatedStudent.speciality,
                 roomNumber=updatedStudent.roomNumber
             };
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                repository.updateInfo(sDal);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            repository.updateInfo(sDal);
         }
 
         public void updateData(WorkerTicketBLL updatedWorker)
@@ -271,10 +249,8 @@ namespace DormitoryProject.ServicesBLL
                 phoneNumber = updatedWorker.phoneNumber,
                 spec = updatedWorker.speciality
             };
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                repository.updateInfo(wDal);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            repository.updateInfo(wDal);
         }
 
         public void addWorkDays(WorkerTicketBLL worker)
@@ -290,10 +266,8 @@ namespace DormitoryProject.ServicesBLL
                 spec = worker.speciality,
                 workDays = worker.workDays
             };
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                repository.addWorkDays(wDal);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            repository.addWorkDays(wDal);
         }
 
         public void deleteWorkDay(WorkerTicketBLL worker)
@@ -309,10 +283,8 @@ namespace DormitoryProject.ServicesBLL
                 spec = worker.speciality,
                 workDays=worker.workDays
             };
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                repository.deleteWorkDay(wDal);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            repository.deleteWorkDay(wDal);
         }
 
         public StudentTicketBLL searchBySerial(StudentTicketBLL student)
@@ -331,10 +303,8 @@ namespace DormitoryProject.ServicesBLL
                 roomNumber=student.roomNumber
             };
             StudentTicketDAL resultStud;
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                resultStud= repository.findBySerial(stDal);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            resultStud= repository.findBySerial(stDal);
             return new StudentTicketBLL
             {
                 serial = resultStud.serial,
@@ -364,10 +334,8 @@ namespace DormitoryProject.ServicesBLL
                 workDays = worker.workDays
             };
             WorkerTicketDAL result;
-            using (PGUserRepository repository = repositoryFactory.getUserRepository())
-            {
-                result=repository.findBySerial(workDal);
-            }
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            result=repository.findBySerial(workDal);
             return new WorkerTicketBLL
             {
                 serial = result.serial,
@@ -379,6 +347,12 @@ namespace DormitoryProject.ServicesBLL
                 speciality=result.spec,
                 workDays=result.workDays
             };
+        }
+
+        public void ChangePassword(string userType,string serial,string number, string oldPassword, string newPassword)
+        { 
+            PGUserRepository repository = repositoryFactory.getUserRepository();
+            repository.changePassword(userType,serial,number, oldPassword, newPassword);
         }
     }
 }

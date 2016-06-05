@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DormitoryProject.DataAccessClasses
 {
-    class FixRepostDAL
+    public class FixRequestJournalDAL:FixJournalDAL
     {
+        public int roomNumber { get; set; }
     }
 }

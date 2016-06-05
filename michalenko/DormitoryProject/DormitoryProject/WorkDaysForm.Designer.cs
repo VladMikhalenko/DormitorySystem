@@ -588,6 +588,9 @@
             this.Controls.Add(this.chbWed);
             this.Controls.Add(this.chbTue);
             this.Controls.Add(this.chbMon);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "WorkDaysForm";
             this.Text = "WorkDaysForm";
             this.ResumeLayout(false);

@@ -40,7 +40,7 @@
             // lbInfo
             // 
             this.lbInfo.AutoSize = true;
-            this.lbInfo.Location = new System.Drawing.Point(103, 12);
+            this.lbInfo.Location = new System.Drawing.Point(12, 9);
             this.lbInfo.Name = "lbInfo";
             this.lbInfo.Size = new System.Drawing.Size(107, 13);
             this.lbInfo.TabIndex = 0;
@@ -64,6 +64,7 @@
             this.btnRooms.TabIndex = 3;
             this.btnRooms.Text = "Список комнат";
             this.btnRooms.UseVisualStyleBackColor = true;
+            this.btnRooms.Click += new System.EventHandler(this.btnRooms_Click);
             // 
             // btnExit
             // 
@@ -73,6 +74,7 @@
             this.btnExit.TabIndex = 4;
             this.btnExit.Text = "Выйти";
             this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // btnChangePwd
             // 
@@ -82,6 +84,7 @@
             this.btnChangePwd.TabIndex = 5;
             this.btnChangePwd.Text = "Изменить пароль";
             this.btnChangePwd.UseVisualStyleBackColor = true;
+            this.btnChangePwd.Click += new System.EventHandler(this.btnChangePwd_Click);
             // 
             // btnJournals
             // 
@@ -91,6 +94,7 @@
             this.btnJournals.TabIndex = 6;
             this.btnJournals.Text = "Журналы ремонтов";
             this.btnJournals.UseVisualStyleBackColor = true;
+            this.btnJournals.Click += new System.EventHandler(this.btnJournals_Click);
             // 
             // button1
             // 
@@ -100,6 +104,7 @@
             this.button1.TabIndex = 7;
             this.button1.Text = "Изменить профиль";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // UserRoomForm
             // 
@@ -113,6 +118,7 @@
             this.Controls.Add(this.btnRooms);
             this.Controls.Add(this.btnUsers);
             this.Controls.Add(this.lbInfo);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "UserRoomForm";

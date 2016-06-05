@@ -11,7 +11,7 @@ namespace DormitoryProject.InterfacesBLL
     public interface IServiceFactory
     {
         UserService getUserService();
-        IRoomService getRoomService();
-
+        RoomService getRoomService();
+        JournalService getJournalService();
     }
 }

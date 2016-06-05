@@ -10,17 +10,19 @@ using System.Data;
 using DormitoryProject.DomainObjects;
 using System.Windows.Forms;
 using DormitoryProject.DataAccessClasses;
+using DormitoryProject.Validation;
 
 namespace DormitoryProject.Presenters
 {
     
     public class UsersFormPresenter
     {
-        private readonly string roleToSend=string.Empty;
         private UserForm form;
         private IEnumerable<TicketBLL> userList;
-        private UserService service;
-        private IServiceFactory serviceFactory;
+        private UserService userService;
+        private ServiceFactory serviceFactory;
+        private RoomService roomService;
+        private FormValidator validator;
         #region Общее
         private string colHeaderLastName = "Фамилия";
         private string colHeaderName = "Имя";
@@ -41,63 +43,75 @@ namespace DormitoryProject.Presenters
         #endregion
         private DataTable tableForValues = new DataTable();
 
-        public UsersFormPresenter(UserForm form,string role)
+        public UsersFormPresenter(UserForm form)
         {
             this.form = form;
-            roleToSend = role;
+            validator = new FormValidator();
             buildStudTable();
-            getUserService();
+            getServices();
             getListOfStudents();
             fillStudentTable(userList);
             sendToGrid(tableForValues);
         }
 
-        public void getUserService()
+        public void getServices()
         {
-            serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory(roleToSend));
-            service = serviceFactory.getUserService();
+            serviceFactory = new ServiceFactory(new PGRepositoryFactory());
+            userService = serviceFactory.getUserService();
+            roomService = serviceFactory.getRoomService();
             getListOfStudents();
         }
+
         public void getListOfWorkers()
         {
-            userList = service.getAllWorkers();   
+            userList = userService.getAllWorkers();   
         }
 
         public void getListOfStudents()
         {
-            userList = service.getAllStudents();
+            userList = userService.getAllStudents();
         }
 
         public StudentTicketBLL getStudentFromTextBoxes()
         {
             List<string> list = new List<string>();
             this.form.getTextBoxValues().ForEach(o=>list.Add(o.Text.ToString()));
-            
-            if (string.IsNullOrWhiteSpace(list[0]))
-            {
-                list[0]= "0";
-            }
-            if(string.IsNullOrWhiteSpace(list[4]))
-            {
-                list[4]= "0";
-            }
-            if (string.IsNullOrWhiteSpace(list[6]))
-            {
-                list[6]= "0";
-            }
             StudentTicketBLL student= new StudentTicketBLL
             {   
-                roomNumber = Convert.ToInt32(list[0]),
                 lastName = list[1].ToString(),
                 name = list[2].ToString(),
                 patronimic = list[3].ToString(),
-                kurs = Convert.ToInt32(list[4]),
                 facult = list[5].ToString(),
-                group= Convert.ToInt32(list[6]),
                 speciality= list[7].ToString(),
                 serial=list[8].ToString(),
                 number=list[9].ToString()
             };
+            #region Проверка интов
+            if (string.IsNullOrWhiteSpace(list[0]))
+            {
+                student.roomNumber = null;
+            }
+            else
+            {
+                student.roomNumber = Convert.ToInt32(list[0]);
+            }
+            if (string.IsNullOrWhiteSpace(list[4]))
+            {
+                student.kurs = null;
+            }
+            else
+            {
+                student.kurs = Convert.ToInt32(list[4]);
+            }
+            if (string.IsNullOrWhiteSpace(list[6]))
+            {
+                student.group = null;
+            }
+            else
+            {
+                student.group = Convert.ToInt32(list[6]);
+            }
+            #endregion
             return student;
         }
         public WorkerTicketBLL getWorkerFromTextBoxes()
@@ -127,62 +141,137 @@ namespace DormitoryProject.Presenters
             return worker;
         }
 
+        public void loadAvailableRooms()
+        {
+            ComboBox box = form.getRoomsComboBox();
+            box.Items.Clear();
+            box.Items.Add("--");
+            foreach(RoomBLL room in roomService.getAvailableForAccomodation())
+            {
+                box.Items.Add(room.number);
+            }
+            box.Text = box.Items[0].ToString();
+        }
+        public void loadRoomsForSearch()
+        {
+            ComboBox box = form.getRoomsComboBox();
+            box.Items.Clear();
+            box.Items.Add("--");
+            foreach(StudentTicketBLL st in userList)
+            {
+                if (!box.Items.Contains(st.roomNumber))
+                {
+                    box.Items.Add(st.roomNumber);
+                }
+            }
+            box.Text = box.Items[0].ToString();
+        }
+
+
+        #region Добавление, удаление, переселение и т.д.
         public void searchWorker()
         {
-            fillWorkerTable(service.searchBy(getWorkerFromTextBoxes()));
-            sendToGrid(tableForValues);
+            validator.validateWorkerToSearch(getWorkerFromTextBoxes());
+            if(validator.isValid())
+            {
+                fillWorkerTable(userService.searchBy(getWorkerFromTextBoxes()));
+                sendToGrid(tableForValues);
+            }
+            else
+            {
+                MessageBox.Show(validator.getErrorString(), "Ошибки ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            validator.resetValues();
         }
         public void searchStudent()
         {
-            fillStudentTable(service.searchBy(getStudentFromTextBoxes()));
-            sendToGrid(tableForValues);
+            validator.validateStudentToSearch(getStudentFromTextBoxes());
+            if(validator.isValid())
+            {
+                fillStudentTable(userService.searchBy(getStudentFromTextBoxes()));
+                sendToGrid(tableForValues);
+            }
+            else
+            {
+                MessageBox.Show(validator.getErrorString(), "Ошибки ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            validator.resetValues();
         }
 
         public void addStudent()
         {
-            service.addUser(getStudentFromTextBoxes());
-            reloadStudGrid();
-        }
-        public void addWorker()
-        {
-            WorkerTicketBLL worker = getWorkerFromTextBoxes();
-            if(openWorkDaysForm(ref worker))
+            validator.validateStudentToAdd(getStudentFromTextBoxes());
+            if (validator.isValid())
             {
-                service.addUser(worker);
-                getListOfWorkers();
-                reloadWorkerGrid();
+                userService.addUser(getStudentFromTextBoxes());
+                reloadStudGrid();
             }
             else
             {
-                MessageBox.Show("Рабочие дни не были указаны", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(validator.getErrorString(),"Ошибки ввода",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+
             }
+            validator.resetValues();
+            loadAvailableRooms();
+        }
+        public void addWorker()
+        {
+            validator.validateWorkerToAdd(getWorkerFromTextBoxes());
+            if(validator.isValid())
+            {
+                WorkerTicketBLL worker = getWorkerFromTextBoxes();
+                if (openWorkDaysForm(ref worker))
+                {
+                    userService.addUser(worker);
+                    getListOfWorkers();
+                    reloadWorkerGrid();
+                }
+                else
+                {
+                    MessageBox.Show("Рабочие дни не были указаны", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show(validator.getErrorString(), "Ошибки ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            validator.resetValues();
         }
 
         public void deleteStudent()
         {
-            service.deleteUser(getStudentFromTextBoxes());
-            reloadStudGrid();
+            if (MessageBox.Show("Вы уверены,что хотите удалить запись?", "Подтвердите действие", MessageBoxButtons.YesNo, MessageBoxIcon.Question)==DialogResult.Yes)
+            {
+                userService.deleteUser(getStudentFromTextBoxes());
+                reloadStudGrid();
+            }
         }
         public void deleteWorker()
         {
-            service.deleteUser(getWorkerFromTextBoxes());
-            reloadWorkerGrid();
+            if (MessageBox.Show("Вы уверены,что хотите удалить запись?", "Подтвердите действие", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                userService.deleteUser(getWorkerFromTextBoxes());
+                reloadWorkerGrid();
+            }
         }
 
         public void resettleStudent()
         {
-            service.resettleStudent(getStudentFromTextBoxes());
-            reloadStudGrid();
+            if (MessageBox.Show("Вы уверены,что хотите переселить студента?", "Подтвердите действие", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                userService.resettleStudent(getStudentFromTextBoxes());
+                reloadStudGrid();
+            }
         }
-
+        #endregion
         public void reloadStudGrid()
         {
-            fillStudentTable(service.getAllStudents());
+            fillStudentTable(userService.getAllStudents());
             sendToGrid(tableForValues);
         }
         public void reloadWorkerGrid()
         {
-            fillWorkerTable(service.getAllWorkers());
+            fillWorkerTable(userService.getAllWorkers());
             sendToGrid(tableForValues);
         }
 
@@ -332,7 +421,7 @@ namespace DormitoryProject.Presenters
         {
             WorkerTicketBLL worker = getWorkerFromTextBoxes();
             getDaysForWorkerFromList(ref worker);
-            WorkerEditForm edit = new WorkerEditForm(worker,roleToSend);
+            WorkerEditForm edit = new WorkerEditForm(worker);
             edit.ShowDialog();
             getListOfWorkers();
             reloadWorkerGrid();

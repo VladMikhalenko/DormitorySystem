@@ -23,7 +23,16 @@ namespace DormitoryProject
             InitializeComponent();
             presenter = new StudentEditPresenter(this,student);
             addTextBoxes();
+            prepareTextBoxes();
             presenter.loadStudent();
+            if(LoginInfo.isKomendant())
+            {
+                btnPwd.Visible = true;
+            }
+            else
+            {
+                btnPwd.Visible = false;
+            }
         }
 
         private void addTextBoxes()
@@ -38,8 +47,20 @@ namespace DormitoryProject
             tbList.Add(tbGroup);
             tbList.Add(tbSerial);
             tbList.Add(tbNumber);
+            
         }
-        
+        private void prepareTextBoxes()
+        {
+            tbLastName.MaxLength = 20;
+            tbName.MaxLength = 20;
+            tbPatr.MaxLength = 20;
+            tbNumber.MaxLength = 6;
+            tbSerial.MaxLength = 2;
+            tbSpec.MaxLength = 10;
+            tbFacult.MaxLength = 15;
+            tbKurs.MaxLength = 1;
+            tbGroup.MaxLength = 1;
+        }
         public List<TextBox> getTextBoxes()
         {
             return tbList;
@@ -58,6 +79,18 @@ namespace DormitoryProject
         private void btnReset_Click(object sender, EventArgs e)
         {
             presenter.loadStudent();
+        }
+
+        private void btnPwd_Click(object sender, EventArgs e)
+        {
+            presenter.resetPassword();
+        }
+
+        private void digitEnterControl(object sender, KeyPressEventArgs e)
+        {
+            if (Char.IsDigit(e.KeyChar) || e.KeyChar == 8) return;
+            else
+                e.Handled = true;
         }
     }
 }

@@ -192,9 +192,12 @@ namespace DormitoryProject
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            presenter.setWorkDaysToWorker();
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            if(presenter.setWorkDaysToWorker())
+            {
+                this.DialogResult = DialogResult.OK;
+                Close();
+            }
+            //this.Close();остановился тут на валидации рабочих дней, осталась валидация формы редаутирования студента, логина,просмотреть какпроисходит добавление рабочих дней
         }
 
         private void btnClear_Click(object sender, EventArgs e)

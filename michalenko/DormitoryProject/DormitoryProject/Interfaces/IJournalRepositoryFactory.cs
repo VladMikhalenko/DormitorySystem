@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace DormitoryProject.Interfaces
 {
-    public interface IRoomRepositoryFactory
+    public interface IJournalRepositoryFactory
     {
-        PGRoomRepository getRoomRepository();
+        PGJournalRepository getJournalRepository();
     }
 }

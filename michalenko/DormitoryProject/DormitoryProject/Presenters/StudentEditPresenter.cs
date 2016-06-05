@@ -1,6 +1,7 @@
 ﻿using DormitoryProject.DomainObjects;
 using DormitoryProject.PGServer;
 using DormitoryProject.ServicesBLL;
+using DormitoryProject.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +15,16 @@ namespace DormitoryProject.Presenters
     {
         private StudentEditForm form;
         private StudentTicketBLL currentStudent;
-        private UserServiceFactory serviceFactory;
+        private ServiceFactory serviceFactory;
         private UserService service;
+        private FormValidator validator;
 
         public StudentEditPresenter(StudentEditForm form,StudentTicketBLL student)
         {
             this.form = form;
             this.currentStudent = student;
-            serviceFactory = new UserServiceFactory(new PGUserRepositoryFactory("student"));
+            validator = new FormValidator();
+            serviceFactory = new ServiceFactory(new PGRepositoryFactory());
             service = serviceFactory.getUserService();
         }
 
@@ -67,9 +70,29 @@ namespace DormitoryProject.Presenters
         }
         public void updateInfo()
         {
-            StudentTicketBLL updatedStud = getStudentFromForm();
-            service.updateData(updatedStud);
-            form.Close();
+            validator.validateStudentToAdd(getStudentFromForm());
+            if(validator.isValid())
+            {
+                service.updateData(getStudentFromForm());
+                form.Close();
+            }
+            else
+            {
+                MessageBox.Show(validator.getErrorString(), "Ошибки ввода", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            
+        }
+
+        public void resetPassword()
+        {
+            if (MessageBox.Show("Вы уверены, что хотите сбросить пароль?", "Сообщение", MessageBoxButtons.YesNo, MessageBoxIcon.Question)==DialogResult.Yes)
+            {
+                if(LoginInfo.isKomendant())
+                {
+                    service.ChangePassword("С",currentStudent.serial, currentStudent.number, "----", "1234");
+                }
+            }
+            
         }
     }
 }

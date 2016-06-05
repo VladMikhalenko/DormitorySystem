@@ -9,11 +9,11 @@ namespace DormitoryProject.Interfaces
 {
     public interface IRoomRepository
     {
-        RoomDAL findByNum(int number);
         IEnumerable<RoomDAL> findByCapacity(int number);
         IEnumerable<RoomDAL> findByState(string state);
-        RoomDAL findStudent(StudentTicketDAL student);
+        IEnumerable<RoomDAL> getAvailableForAccomodation();
+        IEnumerable<RoomDAL> getNotAvailableForAccomodation();
         IEnumerable<RoomDAL> getAllRooms();
-        bool updateState(RoomDAL updatedRoom);
+        void updateState(RoomDAL updatedRoom);
     }
 }

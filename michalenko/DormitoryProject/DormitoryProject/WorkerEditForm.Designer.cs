@@ -47,6 +47,8 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.listBoxDays = new System.Windows.Forms.ListBox();
             this.btnDelete = new System.Windows.Forms.Button();
+            this.btnPwd = new System.Windows.Forms.Button();
+            this.btnReset = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // tbLastName
@@ -175,7 +177,7 @@
             // 
             // btnAddDays
             // 
-            this.btnAddDays.Location = new System.Drawing.Point(105, 225);
+            this.btnAddDays.Location = new System.Drawing.Point(100, 225);
             this.btnAddDays.Name = "btnAddDays";
             this.btnAddDays.Size = new System.Drawing.Size(75, 39);
             this.btnAddDays.TabIndex = 15;
@@ -211,11 +213,33 @@
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
+            // btnPwd
+            // 
+            this.btnPwd.Location = new System.Drawing.Point(260, 225);
+            this.btnPwd.Name = "btnPwd";
+            this.btnPwd.Size = new System.Drawing.Size(75, 39);
+            this.btnPwd.TabIndex = 19;
+            this.btnPwd.Text = "Сброс пароля";
+            this.btnPwd.UseVisualStyleBackColor = true;
+            this.btnPwd.Click += new System.EventHandler(this.btnPwd_Click);
+            // 
+            // btnReset
+            // 
+            this.btnReset.Location = new System.Drawing.Point(179, 225);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(75, 39);
+            this.btnReset.TabIndex = 20;
+            this.btnReset.Text = "Сброс  изменений";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            // 
             // WorkerEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(347, 276);
+            this.Controls.Add(this.btnReset);
+            this.Controls.Add(this.btnPwd);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.listBoxDays);
             this.Controls.Add(this.btnAddDays);
@@ -235,9 +259,11 @@
             this.Controls.Add(this.tbName);
             this.Controls.Add(this.tbLastName);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "WorkerEditForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Изменить информацию";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -265,5 +291,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ListBox listBoxDays;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnPwd;
+        private System.Windows.Forms.Button btnReset;
     }
 }

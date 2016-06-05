@@ -44,5 +44,11 @@ namespace DormitoryProject
         {
             presenter.checkLogin();
         }
+        private void spaceEnterControl(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsSeparator(e.KeyChar)) return;
+            else
+                e.Handled = true;
+        }
     }
 }

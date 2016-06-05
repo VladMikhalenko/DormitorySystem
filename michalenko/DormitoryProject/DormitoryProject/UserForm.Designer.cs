@@ -41,8 +41,10 @@
             this.tbSpec = new System.Windows.Forms.TextBox();
             this.tbRoom = new System.Windows.Forms.TextBox();
             this.gbMenu = new System.Windows.Forms.GroupBox();
-            this.cbDays = new System.Windows.Forms.ComboBox();
             this.listBoxWD = new System.Windows.Forms.ListBox();
+            this.cbRoom = new System.Windows.Forms.ComboBox();
+            this.btnUpdate = new System.Windows.Forms.Button();
+            this.cbDays = new System.Windows.Forms.ComboBox();
             this.btnReload = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
@@ -65,7 +67,6 @@
             this.списокСтудентовToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.списокРаботниковToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnUpdate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.gbMenu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -123,6 +124,7 @@
             this.tbNumber.Name = "tbNumber";
             this.tbNumber.Size = new System.Drawing.Size(100, 20);
             this.tbNumber.TabIndex = 6;
+            this.tbNumber.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbNumber_KeyPress);
             // 
             // tbKurs
             // 
@@ -130,6 +132,7 @@
             this.tbKurs.Name = "tbKurs";
             this.tbKurs.Size = new System.Drawing.Size(100, 20);
             this.tbKurs.TabIndex = 7;
+            this.tbKurs.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbKurs_KeyPress);
             // 
             // tbFacult
             // 
@@ -144,6 +147,7 @@
             this.tbGroup.Name = "tbGroup";
             this.tbGroup.Size = new System.Drawing.Size(100, 20);
             this.tbGroup.TabIndex = 9;
+            this.tbGroup.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbGroup_KeyPress);
             // 
             // tbSpec
             // 
@@ -161,9 +165,10 @@
             // 
             // gbMenu
             // 
-            this.gbMenu.Controls.Add(this.btnUpdate);
             this.gbMenu.Controls.Add(this.cbDays);
             this.gbMenu.Controls.Add(this.listBoxWD);
+            this.gbMenu.Controls.Add(this.cbRoom);
+            this.gbMenu.Controls.Add(this.btnUpdate);
             this.gbMenu.Controls.Add(this.btnReload);
             this.gbMenu.Controls.Add(this.btnClear);
             this.gbMenu.Controls.Add(this.btnApply);
@@ -178,7 +183,6 @@
             this.gbMenu.Controls.Add(this.lbFacult);
             this.gbMenu.Controls.Add(this.tbSpec);
             this.gbMenu.Controls.Add(this.lbKurs);
-            this.gbMenu.Controls.Add(this.tbGroup);
             this.gbMenu.Controls.Add(this.lbNumber);
             this.gbMenu.Controls.Add(this.lbSerial);
             this.gbMenu.Controls.Add(this.lbPatr);
@@ -192,20 +196,13 @@
             this.gbMenu.Controls.Add(this.tbLastName);
             this.gbMenu.Controls.Add(this.tbPatr);
             this.gbMenu.Controls.Add(this.tbName);
+            this.gbMenu.Controls.Add(this.tbGroup);
             this.gbMenu.Location = new System.Drawing.Point(575, 29);
             this.gbMenu.Name = "gbMenu";
             this.gbMenu.Size = new System.Drawing.Size(366, 293);
             this.gbMenu.TabIndex = 12;
             this.gbMenu.TabStop = false;
             this.gbMenu.Text = "Поиск";
-            // 
-            // cbDays
-            // 
-            this.cbDays.FormattingEnabled = true;
-            this.cbDays.Location = new System.Drawing.Point(259, 107);
-            this.cbDays.Name = "cbDays";
-            this.cbDays.Size = new System.Drawing.Size(100, 21);
-            this.cbDays.TabIndex = 23;
             // 
             // listBoxWD
             // 
@@ -214,6 +211,33 @@
             this.listBoxWD.Name = "listBoxWD";
             this.listBoxWD.Size = new System.Drawing.Size(186, 147);
             this.listBoxWD.TabIndex = 22;
+            // 
+            // cbRoom
+            // 
+            this.cbRoom.FormattingEnabled = true;
+            this.cbRoom.Location = new System.Drawing.Point(259, 163);
+            this.cbRoom.Name = "cbRoom";
+            this.cbRoom.Size = new System.Drawing.Size(42, 21);
+            this.cbRoom.TabIndex = 25;
+            this.cbRoom.DropDownClosed += new System.EventHandler(this.cbRoom_DropDownClosed);
+            // 
+            // btnUpdate
+            // 
+            this.btnUpdate.Location = new System.Drawing.Point(89, 228);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(75, 37);
+            this.btnUpdate.TabIndex = 24;
+            this.btnUpdate.Text = "Редакт. запись";
+            this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
+            // 
+            // cbDays
+            // 
+            this.cbDays.FormattingEnabled = true;
+            this.cbDays.Location = new System.Drawing.Point(259, 107);
+            this.cbDays.Name = "cbDays";
+            this.cbDays.Size = new System.Drawing.Size(100, 21);
+            this.cbDays.TabIndex = 23;
             // 
             // btnReload
             // 
@@ -255,7 +279,7 @@
             this.rbResettle.TabStop = true;
             this.rbResettle.Text = "Переселить";
             this.rbResettle.UseVisualStyleBackColor = true;
-            this.rbResettle.CheckedChanged += new System.EventHandler(this.CheckedChanged);
+            this.rbResettle.Click += new System.EventHandler(this.CheckedChanged);
             // 
             // rbDelete
             // 
@@ -267,7 +291,7 @@
             this.rbDelete.TabStop = true;
             this.rbDelete.Text = "Удалить";
             this.rbDelete.UseVisualStyleBackColor = true;
-            this.rbDelete.CheckedChanged += new System.EventHandler(this.CheckedChanged);
+            this.rbDelete.Click += new System.EventHandler(this.CheckedChanged);
             // 
             // rbAdd
             // 
@@ -279,7 +303,7 @@
             this.rbAdd.TabStop = true;
             this.rbAdd.Text = "Добавить";
             this.rbAdd.UseVisualStyleBackColor = true;
-            this.rbAdd.CheckedChanged += new System.EventHandler(this.CheckedChanged);
+            this.rbAdd.Click += new System.EventHandler(this.CheckedChanged);
             // 
             // rbSearch
             // 
@@ -291,7 +315,7 @@
             this.rbSearch.TabStop = true;
             this.rbSearch.Text = "Поиск";
             this.rbSearch.UseVisualStyleBackColor = true;
-            this.rbSearch.CheckedChanged += new System.EventHandler(this.CheckedChanged);
+            this.rbSearch.Click += new System.EventHandler(this.CheckedChanged);
             // 
             // lbRoom
             // 
@@ -424,16 +448,6 @@
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
-            // btnUpdate
-            // 
-            this.btnUpdate.Location = new System.Drawing.Point(89, 228);
-            this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(75, 37);
-            this.btnUpdate.TabIndex = 24;
-            this.btnUpdate.Text = "Редакт. запись";
-            this.btnUpdate.UseVisualStyleBackColor = true;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
-            // 
             // UserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -442,7 +456,10 @@
             this.Controls.Add(this.DGV);
             this.Controls.Add(this.gbMenu);
             this.Controls.Add(this.menuStrip1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MainMenuStrip = this.menuStrip1;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "UserForm";
             this.Text = "UserForm";
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).EndInit();
@@ -495,5 +512,6 @@
         private System.Windows.Forms.ListBox listBoxWD;
         private System.Windows.Forms.ComboBox cbDays;
         private System.Windows.Forms.Button btnUpdate;
+        private System.Windows.Forms.ComboBox cbRoom;
     }
 }

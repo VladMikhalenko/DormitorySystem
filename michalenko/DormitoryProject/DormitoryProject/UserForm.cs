@@ -19,20 +19,49 @@ namespace DormitoryProject
     {
         UsersFormPresenter presenter;
         public List<TextBox> tbList = new List<TextBox>();
-        public UserForm(string role)
+        public UserForm()
         {
             InitializeComponent();
             DGV.ReadOnly = true;
-            presenter = new UsersFormPresenter(this,role);
+            presenter = new UsersFormPresenter(this);
             btnUpdate.Enabled = false;
             DGV.MultiSelect = false;
+            cbRoom.Sorted = true;
+            cbRoom.DropDownStyle = ComboBoxStyle.DropDownList;
             hideWorkerControls();
             списокСтудентовToolStripMenuItem.Checked = true;
             showStudentControls();
             addStudentTextBoxes();
             initDaysCombobox();
+            prepareTextBoxes();
         }
         
+        private void prepareTextBoxes()
+        {
+            tbLastName.MaxLength = 20;
+            tbName.MaxLength = 20;
+            tbPatr.MaxLength = 20;
+            tbSerial.MaxLength = 2;
+            tbNumber.MaxLength = 6;
+            prepareCommonTextBoxes();
+            tbGroup.MaxLength = 1;
+            tbSpec.MaxLength = 10;
+            tbSerial.CharacterCasing = CharacterCasing.Upper;
+        }
+
+        private void prepareCommonTextBoxes()
+        {
+            if(списокРаботниковToolStripMenuItem.Checked)
+            {
+                tbKurs.MaxLength = 9;
+                tbFacult.MaxLength = 16;
+            }
+            else if(списокСтудентовToolStripMenuItem.Checked)
+            {
+                tbKurs.MaxLength = 1;
+                tbFacult.MaxLength = 15;
+            }
+        }
         public void hideWorkerControls()
         {
             listBoxWD.Visible = false;
@@ -69,6 +98,7 @@ namespace DormitoryProject
             {
                 t.Enabled = true;
             }
+            cbRoom.Enabled = true;
         }
 
         private void disableTextBoxes()
@@ -77,6 +107,7 @@ namespace DormitoryProject
             {
                 t.Enabled = false;
             }
+            cbRoom.Enabled = false;
         }
 
         public void hideStudentControls()
@@ -90,6 +121,10 @@ namespace DormitoryProject
             rbResettle.Visible = true;
         }
 
+        public ComboBox getRoomsComboBox()
+        {
+            return cbRoom;
+        }
         public string getDayValue()
         {
             return cbDays.Text;
@@ -107,6 +142,7 @@ namespace DormitoryProject
             cbDays.Items.Add("Воскресенье");
             cbDays.Text = cbDays.Items[0].ToString();
         }
+
 
         public void loadTable(DataTable table)
         {   
@@ -148,6 +184,7 @@ namespace DormitoryProject
             showStudentControls();
             unCheckRadioButton();
             enableTextBoxes();
+            prepareCommonTextBoxes();
             clear();
             #region Пару перемещений
             lbKurs.Text = "Курс";
@@ -160,7 +197,7 @@ namespace DormitoryProject
             lbGroup.Location = new Point(211, 111);
             #endregion
             addStudentTextBoxes();
-            presenter.getUserService();
+            presenter.getServices();
             presenter.getListOfStudents();
             presenter.reloadStudGrid();
         }
@@ -172,6 +209,7 @@ namespace DormitoryProject
             hideStudentControls();
             showWorkerControls();
             unCheckRadioButton();
+            prepareCommonTextBoxes();
             enableTextBoxes();
             clear();
             #region Пару перемещений
@@ -183,7 +221,7 @@ namespace DormitoryProject
             lbGroup.Location = new Point(173, 111);
             #endregion 
             addWorkerTextBoxes();
-            presenter.getUserService();
+            presenter.getServices();
             presenter.getListOfWorkers();
             presenter.buildWorkTable();
             presenter.reloadWorkerGrid();
@@ -191,7 +229,7 @@ namespace DormitoryProject
 
         public List<TextBox> getTextBoxValues()
         {
-            return this.tbList;
+            return tbList;
         }
         
         private void btnApply_Click(object sender, EventArgs e)
@@ -234,9 +272,13 @@ namespace DormitoryProject
                 if (списокСтудентовToolStripMenuItem.Checked)
                 {
                     presenter.resettleStudent();
+                    presenter.loadAvailableRooms();
                     presenter.reloadStudGrid();
-                }
-                
+                } 
+            }
+            else
+            {
+                MessageBox.Show("Выберите операцию", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -278,6 +320,13 @@ namespace DormitoryProject
             btnUpdate.Enabled = false;
             RadioButton rb = (sender as RadioButton);
             gbMenu.Text = rb.Text;
+            if(rb.Text=="Поиск")
+            {
+                if (списокСтудентовToolStripMenuItem.Checked)
+                {
+                    presenter.loadRoomsForSearch();
+                }
+            }
             if(rb.Text=="Удалить")
             {
                 disableTextBoxes();
@@ -289,11 +338,24 @@ namespace DormitoryProject
                 {
                     tbList[i].Enabled = false;
                 }
+                if (списокСтудентовToolStripMenuItem.Checked)
+                {
+                    presenter.loadAvailableRooms();
+                }
+                
+            }
+            else if (rb.Text.Equals("Добавить"))
+            {
+                enableTextBoxes();
+                if (списокСтудентовToolStripMenuItem.Checked)
+                {
+                    presenter.loadAvailableRooms();
+                }
             }
             else
             {
                 enableTextBoxes();
-                if(списокРаботниковToolStripMenuItem.Checked && rbSearch.Checked)
+                if (списокРаботниковToolStripMenuItem.Checked && rbSearch.Checked)
                 {
                     cbDays.Visible = true;
                 }
@@ -303,37 +365,67 @@ namespace DormitoryProject
 
         private void DGV_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            btnUpdate.Enabled = true;
-            for (int i = 0; i < DGV.ColumnCount; i++)
+            if(DGV.CurrentRow.Cells[0].Value.ToString().Equals(""))
             {
-                tbList[i].Text = DGV.CurrentRow.Cells[i].Value.ToString();
+                btnUpdate.Enabled = false;
+                MessageBox.Show("Данная запись пуста, выберите другую");
             }
-            if(списокРаботниковToolStripMenuItem.Checked)
+            else
             {
-                listBoxWD.Items.Clear();
-                WorkerTicketBLL worker = presenter.findWorkerInUserListBySerial(tbSerial.Text, tbNumber.Text);
-                setWorkDaysText(worker.workDays);
-            }
+                btnUpdate.Enabled = true;
+                for (int i = 0; i < DGV.ColumnCount; i++)
+                {
+                    tbList[i].Text = DGV.CurrentRow.Cells[i].Value.ToString();
+                }
+                if (списокСтудентовToolStripMenuItem.Checked)
+                {
+                    if (rbSearch.Checked || rbDelete.Checked)
+                    {
+                        presenter.loadRoomsForSearch();
+                    }
+                    else if (rbAdd.Checked || rbResettle.Checked)
+                    {
+                        presenter.loadAvailableRooms();
+                    }
+                    cbRoom.Text = tbRoom.Text;
+                }
 
+                if (списокРаботниковToolStripMenuItem.Checked)
+                {
+                    listBoxWD.Items.Clear();
+                    WorkerTicketBLL worker = presenter.findWorkerInUserListBySerial(tbSerial.Text, tbNumber.Text);
+                    setWorkDaysText(worker.workDays);
+                }
+            }
         }
 
         public void setWorkDaysText(List<WorkDayDAL> workdays)
         {
-            foreach (WorkDayDAL wd in workdays)
+            if(workdays!=null && workdays.Count!=0)
             {
-                if (wd.restStart != null)
+                foreach (WorkDayDAL wd in workdays)
                 {
-                    listBoxWD.Items.Add(wd.day + ":");
-                    listBoxWD.Items.Add("\tв/р (" + wd.startTime + "-" + wd.endTime + ")");
-                    listBoxWD.Items.Add("\tобед (" + wd.restStart + "-" + wd.restEnd + ")");
-                }
-                else
-                {
-                    listBoxWD.Items.Add(wd.day + ":");
-                    listBoxWD.Items.Add("\tв/р (" + wd.startTime + "-" + wd.endTime + ")");
-                    listBoxWD.Items.Add("\tбез обеда");
+                    if (wd.restStart != null)
+                    {
+                        listBoxWD.Items.Add(wd.day + ":");
+                        listBoxWD.Items.Add("\tв/р (" + wd.startTime + "-" + wd.endTime + ")");
+                        listBoxWD.Items.Add("\tобед (" + wd.restStart + "-" + wd.restEnd + ")");
+                    }
+                    else
+                    {
+                        listBoxWD.Items.Add(wd.day + ":");
+                        listBoxWD.Items.Add("\tв/р (" + wd.startTime + "-" + wd.endTime + ")");
+                        listBoxWD.Items.Add("\tбез обеда");
+                    }
                 }
             }
+            else if(workdays==null || workdays.Count==0)
+            {
+                listBoxWD.Items.Add("Рабочие дни не указаны");
+                listBoxWD.Items.Add("это можно сделать в ");
+                listBoxWD.Items.Add("меню изменения данных");
+            }
+            
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -368,6 +460,43 @@ namespace DormitoryProject
             {
                 presenter.openUpdateWorkerForm();
             }
+        }
+
+        private void cbRoom_DropDownClosed(object sender, EventArgs e)
+        {
+            if (!cbRoom.Text.Equals("--"))
+            {
+                tbRoom.Text = cbRoom.Text;
+            }
+            else
+            {
+                tbRoom.Text = "";
+            }
+        }
+
+        private void digitEnterControl(TextBox tb,KeyPressEventArgs e)
+        {
+            if (Char.IsDigit(e.KeyChar) || e.KeyChar==8) return;
+            else
+                e.Handled = true;
+        }
+
+        private void tbKurs_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(списокСтудентовToolStripMenuItem.Checked)
+            {
+                digitEnterControl(sender as TextBox, e);
+            }
+        }
+
+        private void tbGroup_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            digitEnterControl(sender as TextBox, e);
+        }
+
+        private void tbNumber_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            digitEnterControl(sender as TextBox, e);
         }
     }
 }

@@ -58,16 +58,40 @@ namespace DormitoryProject.DomainObjects
             }
         }
 
-        public void getWorkingTimeForWorkDayDAL(ref WorkDayDAL day)
+        public void getWorkingTimeForWorkDayDAL(ref WorkDayDAL wday)
         {
-            day.day = this.day.Text;
-            day.startTime = this.startTime.Text;
-            day.endTime = this.endTime.Text;
+            wday.day = this.day.Text;
+            if(startTime.Text.Equals("---:---"))
+            {
+                wday.startTime = null;
+            }
+            else
+            {
+                wday.startTime = this.startTime.Text;
+            }
+            if(endTime.Text.Equals("---:---"))
+            {
+                wday.endTime = null;
+            }
+            else
+            {
+                wday.endTime = this.endTime.Text;
+            }
+            
         }
-        public void getRestTimeForWorkDAL(ref WorkDayDAL day)
+        public void getRestTimeForWorkDAL(ref WorkDayDAL wday)
         {
-            day.restStart = this.restStart.Text;
-            day.restEnd = this.restEnd.Text;
+            if(rest.Checked)
+            {
+                wday.restStart = this.restStart.Text;
+                wday.restEnd = this.restEnd.Text;
+            }
+            else if(!rest.Checked)
+            {
+                wday.restStart = null;
+                wday.restEnd = null;
+            }
+            
         }
 
         public void enableWorkTime()
@@ -80,13 +104,17 @@ namespace DormitoryProject.DomainObjects
         }
         public void disableWorkTime()
         {
-            this.day.Checked = false;
-            this.startTime.Enabled = false;
-            this.startTime.Text = "---:---";
-            this.endTime.Enabled = false;
-            this.endTime.Text = "---:---";
-            this.rest.Enabled = false;
-            this.rest.Checked = false;
+            if(day.Enabled)
+            {
+                this.day.Checked = false;
+                this.startTime.Enabled = false;
+                this.startTime.Text = "---:---";
+                this.endTime.Enabled = false;
+                this.endTime.Text = "---:---";
+                this.rest.Enabled = false;
+                this.rest.Checked = false;
+            }
+            
         }
 
         public void enableDay()
@@ -131,10 +159,13 @@ namespace DormitoryProject.DomainObjects
         }
         public void disableRestTime()
         {
-            this.restStart.Enabled = false;
-            this.restStart.Text = "---:---";
-            this.restEnd.Enabled = false;
-            this.restEnd.Text = "---:---";
+            if(day.Enabled)
+            {
+                this.restStart.Enabled = false;
+                this.restStart.Text = "---:---";
+                this.restEnd.Enabled = false;
+                this.restEnd.Text = "---:---";
+            }
         }
     }
 }

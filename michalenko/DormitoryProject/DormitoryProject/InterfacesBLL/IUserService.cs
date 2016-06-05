@@ -18,5 +18,6 @@ namespace DormitoryProject.InterfacesBLL
         void deleteUser(TicketType user);
         void resettleStudent(StudentTicketBLL student);
         bool Authentication(string userType, string serial, string number, string password);
+        void ChangePassword(string userType,string serial,string number, string oldPassword, string newPassword);
     }
 }

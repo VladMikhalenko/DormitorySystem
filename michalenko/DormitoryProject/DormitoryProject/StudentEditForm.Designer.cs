@@ -50,6 +50,7 @@
             this.btnConfirm = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnReset = new System.Windows.Forms.Button();
+            this.btnPwd = new System.Windows.Forms.Button();
             this.gbStudTicket.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -80,6 +81,7 @@
             this.tbKurs.Name = "tbKurs";
             this.tbKurs.Size = new System.Drawing.Size(100, 20);
             this.tbKurs.TabIndex = 3;
+            this.tbKurs.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.digitEnterControl);
             // 
             // tbFacult
             // 
@@ -110,6 +112,7 @@
             this.tbGroup.Name = "tbGroup";
             this.tbGroup.Size = new System.Drawing.Size(100, 20);
             this.tbGroup.TabIndex = 7;
+            this.tbGroup.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.digitEnterControl);
             // 
             // lbName
             // 
@@ -238,15 +241,26 @@
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(75, 38);
             this.btnReset.TabIndex = 21;
-            this.btnReset.Text = "Сброс";
+            this.btnReset.Text = "Начальные данные";
             this.btnReset.UseVisualStyleBackColor = true;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            // 
+            // btnPwd
+            // 
+            this.btnPwd.Location = new System.Drawing.Point(267, 175);
+            this.btnPwd.Name = "btnPwd";
+            this.btnPwd.Size = new System.Drawing.Size(75, 38);
+            this.btnPwd.TabIndex = 22;
+            this.btnPwd.Text = "Сброс пароля";
+            this.btnPwd.UseVisualStyleBackColor = true;
+            this.btnPwd.Click += new System.EventHandler(this.btnPwd_Click);
             // 
             // StudentEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(369, 225);
+            this.Controls.Add(this.btnPwd);
             this.Controls.Add(this.btnReset);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnConfirm);
@@ -265,7 +279,9 @@
             this.Controls.Add(this.tbName);
             this.Controls.Add(this.tbLastName);
             this.Controls.Add(this.gbStudTicket);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "StudentEditForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "StudentEditForm";
             this.gbStudTicket.ResumeLayout(false);
             this.gbStudTicket.PerformLayout();
@@ -298,5 +314,6 @@
         private System.Windows.Forms.Button btnConfirm;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnReset;
+        private System.Windows.Forms.Button btnPwd;
     }
 }
